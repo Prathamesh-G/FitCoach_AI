@@ -110,6 +110,18 @@
       #app-shell .p-5 { padding: 14px; }
     }
   </style>
+<style>
+    /* FitCoach mobile readability and safe text wrapping */
+    @media (max-width: 480px) {
+      #tab-plan, #tab-workout { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+      #tab-plan h2, #tab-workout h2 { font-size: 1.05rem; line-height: 1.35; }
+      #tab-plan p, #tab-workout p { overflow-wrap: anywhere; }
+      #tab-plan button, #tab-workout button { line-height: 1.35; }
+      #tab-plan .grid.grid-cols-5 button, #tab-workout .grid.grid-cols-5 button { min-width: 0; font-size: 9px; white-space: normal; }
+    }
+    #tab-plan *, #tab-workout * { min-width: 0; }
+    #tab-plan h3, #tab-plan h4, #tab-workout h2, #tab-workout h3, #tab-workout h4 { overflow-wrap: anywhere; }
+</style>
 </head>
 <body class="min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
 
@@ -1028,7 +1040,23 @@
           </div>
           <span id="workout-log-date-pill" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-gray-800 text-gray-300">Today</span>
         </div>
-        <p class="text-xs text-gray-400">Choose whichever muscle groups you want to train today—no fixed day lock. Exercises auto-suggest with multi-set weight (kg) & reps.</p>
+        <p class="text-xs text-gray-400">Choose a suggested 5-day training split, or customise muscle groups below. Exercises auto-suggest with multi-set weight (kg) & reps.</p>
+
+        <!-- Suggested 5-day split, matching the Plan tab -->
+        <div class="bg-gray-950/90 border border-gray-800 rounded-2xl p-3 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Suggested 5-Day Split</span>
+            <span class="text-[10px] text-amber-400">Core + cardio optional</span>
+          </div>
+          <div class="grid grid-cols-5 gap-1.5 text-[10px] font-bold">
+            <button type="button" onclick="selectWorkoutLogDay(1)" id="wlog-split-btn-1" class="py-2 px-1 rounded-xl border border-amber-500/50 bg-amber-500/20 text-amber-300 text-center">D1<br><span class="text-[9px]">Chest/Tri</span></button>
+            <button type="button" onclick="selectWorkoutLogDay(2)" id="wlog-split-btn-2" class="py-2 px-1 rounded-xl border border-gray-800 bg-gray-950 text-gray-400 text-center">D2<br><span class="text-[9px]">Back/Bi</span></button>
+            <button type="button" onclick="selectWorkoutLogDay(3)" id="wlog-split-btn-3" class="py-2 px-1 rounded-xl border border-gray-800 bg-gray-950 text-gray-400 text-center">D3<br><span class="text-[9px]">Legs</span></button>
+            <button type="button" onclick="selectWorkoutLogDay(4)" id="wlog-split-btn-4" class="py-2 px-1 rounded-xl border border-gray-800 bg-gray-950 text-gray-400 text-center">D4<br><span class="text-[9px]">Shoulders</span></button>
+            <button type="button" onclick="selectWorkoutLogDay(5)" id="wlog-split-btn-5" class="py-2 px-1 rounded-xl border border-gray-800 bg-gray-950 text-gray-400 text-center">D5<br><span class="text-[9px]">Upper/Arms</span></button>
+          </div>
+          <p id="wlog-split-description" class="text-[11px] text-gray-500">Choose a day to load its suggested muscle groups. You can still customise them.</p>
+        </div>
 
         <!-- Previous Days / Weeks / Months Log Browser -->
         <div class="bg-gray-950/90 border border-gray-800 rounded-2xl p-3 space-y-2.5">
@@ -4360,9 +4388,12 @@ EVERY single day (Days 1 through 5) MUST include:
           <p class="text-xs text-gray-300 leading-relaxed">${escapeHtml(meal.indianItems)}</p>
           <div class="flex items-center justify-between pt-2 border-t border-gray-800/80">
             <span class="text-[11px] text-gray-400">${Math.round(meal.carbs)}g Carbs • ${Math.round(meal.fats)}g Fats</span>
-            <button onclick="logPlannedMeal(${idx})" class="px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-bold transition">
-              + Log This Meal
-            </button>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button type="button" onclick="showMealRecipe(${idx})" class="px-3 py-1.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-sky-300 text-xs font-bold transition">🍳 Recipe</button>
+              <button onclick="logPlannedMeal(${idx})" class="px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-bold transition">
+                + Log This Meal
+              </button>
+            </div>
           </div>
         </div>
       `).join('');
@@ -4452,6 +4483,40 @@ EVERY single day (Days 1 through 5) MUST include:
         ${workoutSectionHtml}
       `;
     }
+
+    window.showMealRecipe = async function(mealIdx) {
+      const plan = dailyPlansCache[selectedDateStr];
+      const meal = plan?.meals?.[mealIdx];
+      if (!meal) return;
+      let modal = document.getElementById('meal-recipe-modal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'meal-recipe-modal';
+        modal.className = 'fixed inset-0 z-[100] bg-black/80 p-3 flex items-center justify-center';
+        modal.innerHTML = `<div class="w-full max-w-xl max-h-[88vh] overflow-y-auto bg-gray-900 border border-gray-700 rounded-3xl p-4 sm:p-5 space-y-3"><div class="flex items-start justify-between gap-3"><div><div class="text-[10px] font-bold uppercase tracking-wider text-sky-400">FitCoach Recipe</div><h3 id="recipe-modal-title" class="text-lg font-extrabold text-white"></h3></div><button type="button" onclick="document.getElementById('meal-recipe-modal').remove()" class="px-3 py-1.5 rounded-xl bg-gray-800 text-gray-200 text-sm">✕</button></div><div id="recipe-modal-content" class="text-sm text-gray-300">Preparing a portion-sized recipe…</div></div>`;
+        modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+        document.body.appendChild(modal);
+      }
+      document.getElementById('recipe-modal-title').textContent = meal.title || 'Meal recipe';
+      const content = document.getElementById('recipe-modal-content');
+      content.innerHTML = `<div class="animate-pulse text-sky-300">Creating ingredients and cooking steps…</div>`;
+      const recipeSchema = { type: 'OBJECT', properties: {
+        servingSize: { type: 'STRING' },
+        ingredients: { type: 'ARRAY', items: { type: 'STRING' } },
+        steps: { type: 'ARRAY', items: { type: 'STRING' } },
+        nutritionTip: { type: 'STRING' }
+      }, required: ['servingSize','ingredients','steps','nutritionTip'] };
+      try {
+        const prompt = `Create a practical Indian home-cooking recipe for: ${meal.title}. Planned meal description: ${meal.indianItems}. Target for this entire meal portion: about ${Math.round(meal.calories)} kcal, ${Math.round(meal.protein)}g protein, ${Math.round(meal.carbs)}g carbs and ${Math.round(meal.fats)}g fat. Give measured ingredient quantities for one serving (or explicitly state number of servings), concise numbered cooking steps, and a nutrition tip explaining which quantities should not be changed to stay close to the target. Do not claim laboratory-level exactness; use realistic estimates. Respect this meal's existing vegetarian/non-vegetarian description and do not add ingredients that conflict with it.`;
+        const recipe = await callGeminiJson([{ text: prompt }], recipeSchema);
+        const ingredients = (recipe.ingredients || []).map(x => `<li class="mb-1">${escapeHtml(x)}</li>`).join('');
+        const steps = (recipe.steps || []).map((x,i) => `<li class="mb-2"><span class="text-sky-300 font-bold">${i+1}.</span> ${escapeHtml(x)}</li>`).join('');
+        const yt = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(`${meal.title} Indian healthy high protein recipe`);
+        content.innerHTML = `<div class="flex flex-wrap gap-2 text-[11px] mb-3"><span class="px-2 py-1 rounded-lg bg-amber-500/10 text-amber-300">Target ${Math.round(meal.calories)} kcal</span><span class="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-300">${Math.round(meal.protein)}g protein</span><span class="px-2 py-1 rounded-lg bg-gray-800 text-gray-300">${escapeHtml(recipe.servingSize || '1 serving')}</span></div><h4 class="font-bold text-white mb-2">Ingredients</h4><ul class="list-disc pl-5 mb-4">${ingredients}</ul><h4 class="font-bold text-white mb-2">Cooking steps</h4><ol class="list-none mb-4">${steps}</ol><div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-100 text-xs"><b>Nutrition tip:</b> ${escapeHtml(recipe.nutritionTip || 'Measure ingredients and cooking oil for the closest macro match.')}</div><a href="${yt}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-bold">▶ Find recipe videos on YouTube</a><p class="text-[10px] text-gray-500 mt-2">Nutrition values are estimates and vary by ingredient brand, cooking method and portion size. Weigh ingredients for better accuracy.</p>`;
+      } catch (err) {
+        content.innerHTML = `<p class="text-rose-300 text-sm">Could not generate the recipe right now. Please try again.</p><a class="inline-block mt-3 text-red-300 underline text-xs" href="https://www.youtube.com/results?search_query=${encodeURIComponent(meal.title + ' Indian healthy recipe')}" target="_blank" rel="noopener noreferrer">Search this recipe on YouTube</a>`;
+      }
+    };
 
     window.logPlannedMeal = async function(mealIdx) {
       const plan = dailyPlansCache[selectedDateStr];
@@ -4667,6 +4732,14 @@ EVERY single day (Days 1 through 5) MUST include:
       if (titleEl) {
         titleEl.textContent = `Muscles: ${selectedMusclesForDay.join(' + ') || 'Custom'}`;
       }
+      const splitLabels = {1:'Chest & Triceps',2:'Back & Biceps',3:'Legs (Quads, Hamstrings, Glutes & Calves)',4:'Shoulders & Traps',5:'Upper Body Balance & Arms'};
+      for (let d = 1; d <= 5; d++) {
+        const splitBtn = document.getElementById(`wlog-split-btn-${d}`);
+        if (!splitBtn) continue;
+        splitBtn.className = `py-2 px-1 rounded-xl border text-center ${workoutLogDay === d ? 'border-amber-500/50 bg-amber-500/20 text-amber-300' : 'border-gray-800 bg-gray-950 text-gray-400'}`;
+      }
+      const splitDesc = document.getElementById('wlog-split-description');
+      if (splitDesc) splitDesc.textContent = `Day ${workoutLogDay}: ${splitLabels[workoutLogDay] || 'Custom training'}. Add or remove muscle groups below to personalise this session.`;
 
       if (muscleBar) {
         muscleBar.innerHTML = ALL_MUSCLE_GROUPS.map(muscle => {
