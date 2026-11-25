@@ -117,15 +117,15 @@
       <ol class="space-y-3 text-sm text-gray-300 mb-5">
         <li class="flex items-start gap-3 bg-gray-800/60 p-3 rounded-2xl border border-gray-800">
           <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
-          <span>Open this web app link in <strong>Safari</strong> on your iPhone (or tap the Share icon in the top-right preview menu first).</span>
+          <span>Open the FitCoach AI website in <strong>Safari</strong> on your iPhone.</span>
         </li>
         <li class="flex items-start gap-3 bg-gray-800/60 p-3 rounded-2xl border border-gray-800">
           <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
-          <span>Tap the <strong>Share</strong> button <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-gray-700 text-blue-400 text-xs font-semibold">⎋</span> at the bottom of Safari.</span>
+          <span>Tap Safari’s <strong>Share</strong> button (the square with an upward arrow). It is usually in the bottom toolbar.</span>
         </li>
         <li class="flex items-start gap-3 bg-gray-800/60 p-3 rounded-2xl border border-gray-800">
           <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
-          <span>Scroll down and tap <strong>"Add to Home Screen"</strong>, then tap <strong>Add</strong>. It will appear just like a native iOS app!</span>
+          <span>In the Share menu, choose <strong>“Add to Home Screen”</strong>, then tap <strong>Add</strong>. The shortcut will appear on your Home Screen.</span>
         </li>
       </ol>
 
@@ -138,6 +138,35 @@
       <button onclick="toggleIosGuide(false)" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-bold text-sm transition">
         Got It
       </button>
+    </div>
+  </div>
+
+  <!-- Android Home Screen Shortcut Guide Modal -->
+  <div id="android-guide-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="bg-gray-900 border border-gray-800 rounded-3xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-base font-bold text-white">Add FitCoach AI to Android</h3>
+          <p class="text-xs text-gray-400">Create a Home Screen shortcut</p>
+        </div>
+        <button type="button" onclick="toggleAndroidGuide(false)" aria-label="Close Android installation guide" class="p-2 rounded-xl bg-gray-800 text-gray-400 hover:text-white">✕</button>
+      </div>
+      <ol class="space-y-3 text-sm text-gray-300 mb-5">
+        <li class="flex items-start gap-3 bg-gray-800/60 p-3 rounded-2xl border border-gray-800">
+          <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs flex items-center justify-center shrink-0">1</span>
+          <span>Open the FitCoach AI website in <strong>Google Chrome</strong> on your Android phone. The site must be hosted on a secure HTTPS link.</span>
+        </li>
+        <li class="flex items-start gap-3 bg-gray-800/60 p-3 rounded-2xl border border-gray-800">
+          <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs flex items-center justify-center shrink-0">2</span>
+          <span>Tap Chrome's <strong>⋮ menu</strong> in the top-right corner.</span>
+        </li>
+        <li class="flex items-start gap-3 bg-gray-800/60 p-3 rounded-2xl border border-gray-800">
+          <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs flex items-center justify-center shrink-0">3</span>
+          <span>Choose <strong>“Add to Home screen”</strong> or <strong>“Install app”</strong> (the wording depends on Chrome and the website), then confirm.</span>
+        </li>
+      </ol>
+      <p class="text-xs text-amber-200 bg-amber-500/10 border border-amber-500/25 rounded-xl p-3 mb-4">If you only see “Add to Home screen”, this creates a browser shortcut. A full installable PWA requires a web app manifest and service worker on the hosted site.</p>
+      <button type="button" onclick="toggleAndroidGuide(false)" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-bold text-sm">Got It</button>
     </div>
   </div>
 
@@ -382,10 +411,10 @@
           <p id="header-greeting" class="text-xs text-gray-400 mt-0.5">Hey Champ, let's hit your protein target!</p>
         </div>
 
-        <button onclick="toggleIosGuide(true)" title="Add to iPhone Home Screen" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-900 hover:bg-gray-800 border border-gray-800 text-xs font-semibold text-gray-300 transition">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-          <span>iOS App</span>
-        </button>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button type="button" onclick="toggleAndroidGuide(true)" title="Add to Android Home Screen" aria-label="Android Home Screen shortcut instructions" class="px-2.5 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 border border-gray-800 text-[11px] font-bold text-gray-300 transition">Android</button>
+          <button type="button" onclick="toggleIosGuide(true)" title="Add to iPhone Home Screen" aria-label="iOS Home Screen shortcut instructions" class="px-2.5 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 border border-gray-800 text-[11px] font-bold text-gray-300 transition">iOS</button>
+        </div>
       </div>
     </header>
 
@@ -1176,10 +1205,14 @@
           <span>Copy Shareable Link for Friends</span>
         </button>
 
-        <button onclick="toggleIosGuide(true)" class="w-full py-3 rounded-2xl bg-gray-800 hover:bg-gray-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition">
-          <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-          <span>How to Install iOS Home Screen Shortcut</span>
-        </button>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" onclick="toggleAndroidGuide(true)" class="py-3 px-2 rounded-2xl bg-gray-800 hover:bg-gray-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+            <span class="text-emerald-400">▣</span><span>Android Shortcut Guide</span>
+          </button>
+          <button type="button" onclick="toggleIosGuide(true)" class="py-3 px-2 rounded-2xl bg-gray-800 hover:bg-gray-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+            <span class="text-amber-400">▯</span><span>iOS Shortcut Guide</span>
+          </button>
+        </div>
 
         <div class="pt-2 border-t border-gray-800 flex items-center justify-between text-[11px] text-gray-500">
           <span id="sync-status-text">Cloud Sync: Active</span>
@@ -1608,7 +1641,9 @@
         error: 'bg-rose-950/95 border-rose-500/50 text-rose-200'
       };
       toast.className = `pointer-events-auto px-4 py-3 rounded-2xl border shadow-xl text-xs font-semibold flex items-center justify-between gap-2 transition-all duration-300 ${colors[type] || colors.info}`;
-      toast.innerHTML = `<span>${message}</span>`;
+      const toastMessage = document.createElement('span');
+      toastMessage.textContent = String(message ?? '');
+      toast.appendChild(toastMessage);
       container.appendChild(toast);
       setTimeout(() => {
         toast.style.opacity = '0';
@@ -1637,6 +1672,18 @@
 
     window.toggleIosGuide = function(show) {
       const modal = document.getElementById('ios-guide-modal');
+      if (show) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      } else {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    };
+
+    window.toggleAndroidGuide = function(show) {
+      const modal = document.getElementById('android-guide-modal');
+      if (!modal) return;
       if (show) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -2724,7 +2771,9 @@
       }
       await persistProfileExtrasToCloud();
       renderBodyProgressHistory();
+      renderProfileTab(); // Refresh profile metrics when the check-in changes current weight.
       renderDashboard();
+      updatePlanHeader(); // Keep the plan's calorie/protein targets in sync with the new weight.
       showToast('Body check-in saved!', 'success');
     };
 
@@ -3774,50 +3823,93 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
       card.classList.remove('hidden');
       card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-      };
 
-      const delays = [700, 1500];
-      for (let attempt = 0; attempt <= delays.length; attempt++) {
-        try {
-          const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 14000);
-          const resp = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-            signal: controller.signal
-          });
-          clearTimeout(timer);
-          if (!resp.ok) throw new Error(`API ${resp.status}`);
-          const json = await resp.json();
-          const text = json.candidates?.[0]?.content?.parts?.[0]?.text;
-          const parsed = extractJsonObject(text);
-          if (!parsed) throw new Error('Empty AI response');
-          return parsed;
-        } catch (err) {
-          if (attempt === delays.length) throw err;
-          await new Promise(r => setTimeout(r, delays[attempt]));
+    window.closeAiReview = function() {
+      pendingAiMeal = null;
+      document.getElementById('ai-review-card').classList.add('hidden');
+    };
+
+    window.confirmAiMealSave = async function(asShortcut = false) {
+      const name = document.getElementById('rev-meal-name').value.trim() || 'Analyzed Meal';
+      const calories = parseFloat(document.getElementById('rev-cal').value) || 0;
+      const protein = parseFloat(document.getElementById('rev-pro').value) || 0;
+      const carbs = parseFloat(document.getElementById('rev-carb').value) || 0;
+      const fats = parseFloat(document.getElementById('rev-fat').value) || 0;
+      const displayName = formatMealNameWithSlot(name);
+
+      if (asShortcut) {
+        await addCustomShortcut({ name: displayName, calories, protein, carbs, fats });
+      }
+      await addMealEntry({ name: displayName, calories, protein, carbs, fats });
+      closeAiReview();
+      switchTab('dashboard');
+    };
+
+    window.saveManualMeal = async function(asShortcut = false) {
+      const rawName = document.getElementById('man-name').value.trim();
+      const cal = parseFloat(document.getElementById('man-cal').value);
+      const pro = parseFloat(document.getElementById('man-pro').value) || 0;
+      const carb = parseFloat(document.getElementById('man-carb').value) || 0;
+      const fat = parseFloat(document.getElementById('man-fat').value) || 0;
+
+      if (!rawName || isNaN(cal)) {
+        showToast('Please enter a meal name and calories.', 'info');
+        return;
+      }
+
+      const displayName = formatMealNameWithSlot(rawName);
+      if (asShortcut) {
+        await addCustomShortcut({ name: displayName, calories: cal, protein: pro, carbs: carb, fats: fat });
+      }
+      await addMealEntry({ name: displayName, calories: cal, protein: pro, carbs: carb, fats: fat });
+
+      document.getElementById('man-name').value = '';
+      document.getElementById('man-cal').value = '';
+      document.getElementById('man-pro').value = '';
+      document.getElementById('man-carb').value = '';
+      document.getElementById('man-fat').value = '';
+      switchTab('dashboard');
+    };
+
+    const SPLIT_DEFINITIONS = {
+      1: { short: 'Chest/Tri', label: 'Day 1: Chest & Triceps + Core & Cardio' },
+      2: { short: 'Back/Bi', label: 'Day 2: Back & Biceps + Core & Cardio' },
+      3: { short: 'Legs', label: 'Day 3: Legs + Core & Cardio' },
+      4: { short: 'Shoulders', label: 'Day 4: Shoulders & Traps + Core & Cardio' },
+      5: { short: 'Upper/Arms', label: 'Day 5: Upper Body Balance & Arms + Core & Cardio' }
+    };
+
+    window.selectSplitDay = function(dayNum) {
+      selectedSplitDay = Number(dayNum) || 1;
+      for (let i = 1; i <= 5; i++) {
+        const btn = document.getElementById(`split-btn-${i}`);
+        if (!btn) continue;
+        if (i === selectedSplitDay) {
+          btn.className = 'split-pill py-2 px-1 rounded-xl border border-amber-500/50 bg-amber-500/20 text-amber-300 text-center transition';
+        } else {
+          btn.className = 'split-pill py-2 px-1 rounded-xl border border-gray-800 bg-gray-950 text-gray-400 text-center transition';
         }
       }
-    }
-
-    function estimateMealFromTextFallback(text) {
-      const lower = text.toLowerCase();
-      let cal = 380, pro = 18, carb = 45, fat = 12;
-      if (lower.includes('chicken') || lower.includes('fish') || lower.includes('egg')) {
-        cal = 420; pro = 34; carb = 32; fat = 14;
-      } else if (lower.includes('paneer') || lower.includes('soya') || lower.includes('whey')) {
-        cal = 410; pro = 27; carb = 34; fat = 16;
+      if (dailyPlansCache[selectedDateStr]) {
+        renderGeneratedPlan(dailyPlansCache[selectedDateStr]);
       }
-      return {
-        mealName: text.slice(0, 48),
-        items: [{ name: text, portion: '1 serving', calories: cal, protein: pro, carbs: carb, fats: fat }],
-        totalCalories: cal,
-        totalProtein: pro,
-        totalCarbs: carb,
-        totalFats: fat,
-        coachFeedback: 'Estimated using Indian portion baseline—adjust macros anytime before saving.'
-      };
+    };
+
+    function updatePlanHeader() {
+      if (!userProfile) return;
+      const dObj = parseYMD(selectedDateStr);
+      const dayName = DAYS_FULL[dObj.getDay()];
+      const dietCode = getDayDietType(selectedDateStr);
+      const m = userProfile.metrics;
+
+      const dayPill = document.getElementById('plan-day-pill');
+      const targetPill = document.getElementById('plan-target-pill');
+      if (dayPill) dayPill.textContent = `${dayName} • ${getDietLabel(dietCode)}`;
+      if (targetPill) targetPill.textContent = `${m.targetCalories} kcal • ${m.proteinGrams}g P`;
+
+      if (dailyPlansCache[selectedDateStr]) {
+        renderGeneratedPlan(dailyPlansCache[selectedDateStr]);
+      }
     }
 
     function buildSmartFallbackPlan({ dietCode, targetCalories, proteinGrams, carbGrams, fatGrams, dayName }) {
