@@ -1,4 +1,4 @@
-# FitCoach_AI
+# FitCoach AI
 
 
 Core Features
