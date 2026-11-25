@@ -1139,24 +1139,19 @@
         <div id="body-progress-history" class="space-y-1.5 max-h-40 overflow-y-auto"></div>
       </div>
 
-      <!-- Gemini AI Key & Reliability -->
+      <!-- Server-side Gemini AI connection -->
       <div class="bg-gray-900 border border-gray-800 rounded-3xl p-5 space-y-2.5">
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between gap-2">
           <div>
             <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400">AI Engine</span>
-            <h3 class="text-sm font-extrabold text-white">Gemini API Key (Optional)</h3>
+            <h3 class="text-sm font-extrabold text-white">FitCoach AI Engine</h3>
           </div>
-          <span id="gemini-key-status" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-800 text-gray-400">Smart Fallback Active</span>
+          <span id="gemini-key-status" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300">Cloud AI Connected</span>
         </div>
         <p class="text-[11px] text-gray-400 leading-relaxed">
-          If your hosted link has no server-side API key, paste a Gemini API key here for live AI generation—otherwise the built-in coach generates tailored Indian meal plans & 5-day splits reliably with zero errors.
+          AI meal analysis, food-photo recognition, nutrition-label reading and fitness screenshot analysis run through the secure FitCoach AI server. Your Gemini API key is stored on Cloudflare and is not needed on this device.
         </p>
-        <div class="flex gap-2">
-          <input type="password" id="gemini-api-key-input" placeholder="AIzaSy... (optional)" class="flex-1 px-3 py-2 rounded-xl bg-gray-950 border border-gray-800 text-white text-xs focus:outline-none focus:border-amber-500" />
-          <button type="button" onclick="saveCustomGeminiKey()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-extrabold text-xs shrink-0 transition">
-            Save Key
-          </button>
-        </div>
+        <p class="text-[10px] text-gray-500">If AI is temporarily busy, FitCoach AI will still offer its built-in estimate as a fallback.</p>
       </div>
 
       <!-- Share & Reset Actions -->
@@ -1941,26 +1936,11 @@
       }
     }
 
-    window.saveCustomGeminiKey = async function() {
-      const inp = document.getElementById('gemini-api-key-input');
-      customGeminiApiKey = (inp?.value || '').trim();
-      await persistProfileExtrasToCloud();
-      updateGeminiKeyBadge();
-      showToast(customGeminiApiKey ? 'Gemini API key saved!' : 'Using built-in smart coach fallback.', 'success');
-    };
-
     function updateGeminiKeyBadge() {
       const badge = document.getElementById('gemini-key-status');
-      const inp = document.getElementById('gemini-api-key-input');
-      if (inp && customGeminiApiKey && !inp.value) inp.value = customGeminiApiKey;
       if (!badge) return;
-      if (customGeminiApiKey) {
-        badge.textContent = 'Live Gemini Key';
-        badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300';
-      } else {
-        badge.textContent = 'Smart Fallback Active';
-        badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300';
-      }
+      badge.textContent = 'Cloud AI Connected';
+      badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300';
     }
 
     window.signInWithGoogleDrive = async function() {
@@ -3577,11 +3557,7 @@
       `).join('');
     };
 
-    const DEFAULT_API_KEY = "";
-
-    function getActiveGeminiKey() {
-      return (customGeminiApiKey || DEFAULT_API_KEY || '').trim();
-    }
+    const FITCOACH_AI_WORKER_URL = "https://fitcoach-ai-api.prathamesh-gandhe.workers.dev";
 
     function extractJsonObject(rawText) {
       if (!rawText) return null;
@@ -3603,12 +3579,6 @@
     }
 
     async function callGeminiJson(parts, responseSchema) {
-      const key = getActiveGeminiKey();
-      if (!key) {
-        throw new Error('No Gemini API key configured');
-      }
-      // Use a stable, current multimodal model rather than the older preview ID.
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(key)}`;
       const payload = {
         contents: [{ role: "user", parts }],
         generationConfig: {
@@ -3618,42 +3588,54 @@
         }
       };
 
-      const delays = [700, 1500];
-      for (let attempt = 0; attempt <= delays.length; attempt++) {
+      // The Gemini key remains on Cloudflare; this browser calls only our Worker.
+      const retryDelays = [1200, 2800];
+      for (let attempt = 0; attempt <= retryDelays.length; attempt++) {
+        let timer;
         try {
           const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 25000);
-          let resp;
-          try {
-            resp = await fetch(url, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload),
-              signal: controller.signal
-            });
-          } finally {
-            clearTimeout(timer);
-          }
+          timer = setTimeout(() => controller.abort(), 30000);
+          const resp = await fetch(FITCOACH_AI_WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: controller.signal
+          });
+          clearTimeout(timer);
+
+          const responseText = await resp.text();
+          let json;
+          try { json = responseText ? JSON.parse(responseText) : {}; }
+          catch (_) { json = { error: responseText || 'The AI server returned an unreadable response.' }; }
+
           if (!resp.ok) {
-            let detail = '';
-            try { detail = (await resp.json()).error?.message || ''; } catch (_) {}
-            const err = new Error(`Gemini API ${resp.status}${detail ? ': ' + detail : ''}`);
+            const message = typeof json.error === 'string'
+              ? json.error
+              : (json.error?.message || json.message || `AI server error (${resp.status})`);
+            const err = new Error(message);
             err.status = resp.status;
+            if ([429, 500, 502, 503, 504].includes(resp.status) && attempt < retryDelays.length) {
+              await new Promise(resolve => setTimeout(resolve, retryDelays[attempt]));
+              continue;
+            }
             throw err;
           }
-          const json = await resp.json();
-          const text = json.candidates?.[0]?.content?.parts?.[0]?.text;
-          const parsed = extractJsonObject(text);
-          if (!parsed) throw new Error('Empty AI response');
+
+          const responsePart = json.candidates?.[0]?.content?.parts?.find(part => typeof part.text === 'string');
+          const parsed = extractJsonObject(responsePart?.text);
+          if (!parsed) throw new Error('The AI returned an empty response. Please try again.');
           return parsed;
         } catch (err) {
-          // Retry transient network/rate/server errors only; invalid keys and bad
-          // requests should surface immediately instead of wasting the user's time.
-          if (err.status && err.status < 500 && err.status !== 429) throw err;
-          if (attempt === delays.length) throw err;
-          await new Promise(r => setTimeout(r, delays[attempt]));
+          if (timer) clearTimeout(timer);
+          const isTemporary = err.name === 'AbortError' || !err.status;
+          if (attempt < retryDelays.length && isTemporary) {
+            await new Promise(resolve => setTimeout(resolve, retryDelays[attempt]));
+            continue;
+          }
+          throw err;
         }
       }
+      throw new Error('The AI service is temporarily unavailable. Please try again shortly.');
     }
 
     function estimateMealFromTextFallback(text, isPhoto = false) {
@@ -3728,7 +3710,7 @@
         totalCarbs: Math.round(totalCarbs),
         totalFats: Math.round(totalFats),
         coachFeedback: isPhoto
-          ? 'Photo analyzed using smart Indian portion estimator (add a Gemini API key in Profile for live vision AI). Adjust any number before logging.'
+          ? 'AI was temporarily unavailable, so this is a smart Indian portion estimate. Adjust any number before logging.'
           : 'Estimated using Indian portion baseline—adjust macros anytime before saving.'
       };
     }
@@ -3762,10 +3744,6 @@
     window.analyzeMealPhoto = async function() {
       if (!selectedPhotoBase64) {
         showToast('Choose a meal photo first.', 'info');
-        return;
-      }
-      if (!getActiveGeminiKey()) {
-        showToast('Live photo AI needs a Gemini API key. Add it in Profile → Gemini API Key, then try again.', 'error');
         return;
       }
       const btn = document.getElementById('analyze-photo-btn');
