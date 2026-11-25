@@ -1189,56 +1189,54 @@
     let currentUser = null;
     let googleUserEmail = null;
     let googleDriveToken = null;
-    let appId = typeof __app_id !== 'undefined' ? __app_id : 'fitcoach-ai-default';
+    let appId = typeof __app_id !== 'undefined' ? __app_id : 'fitcoach-ai-15e87';
     let useCloud = false;
 
-    // Default schedule: Mon(1), Tue(2), Thu(4), Sat(6) = 'veg'; Sun(0), Wed(3), Fri(5) = 'nonveg'
-    let draftSchedule = {
-      0: 'nonveg',
-      1: 'veg',
-      2: 'veg',
-      3: 'nonveg',
-      4: 'veg',
-      5: 'nonveg',
-      6: 'veg'
-    };
-
-    const DEFAULT_SHORTCUTS = [
-      { id: 'sc_def_1', name: '2 Phulka Roti + 1 Bowl Dal Tadka', calories: 380, protein: 16, carbs: 58, fats: 9 },
-      { id: 'sc_def_2', name: '150g Grilled Chicken + 1 Cup Rice', calories: 430, protein: 42, carbs: 45, fats: 8 },
-      { id: 'sc_def_3', name: '120g Paneer Bhurji + 2 Roti', calories: 470, protein: 26, carbs: 44, fats: 20 },
-      { id: 'sc_def_4', name: '4 Boiled Eggs (2 Whole + 2 Whites)', calories: 200, protein: 19, carbs: 1, fats: 11 }
-    ];
+    const __firebase_config = JSON.stringify({
+      apiKey: "AIzaSyDDnS2ox8vawpKGLNozsAvCGeGo4e1CKC8",
+      authDomain: "fitcoach-ai-15e87.firebaseapp.com",
+      projectId: "fitcoach-ai-15e87",
+      storageBucket: "fitcoach-ai-15e87.firebasestorage.app",
+      messagingSenderId: "763149912099",
+      appId: "1:763149912099:web:ace616f3f607f170918996",
+      measurementId: "G-JFNCEZLW95"
+    });
 
     let userProfile = null;
+    let draftSchedule = { 0: 'nonveg', 1: 'veg', 2: 'veg', 3: 'nonveg', 4: 'veg', 5: 'nonveg', 6: 'veg' };
     let selectedDateStr = getTodayDateStr();
-    let allMeals = []; // Meals loaded for current user
-    let customShortcuts = [...DEFAULT_SHORTCUTS];
-    let editingShortcutId = null;
-    let dailyHabits = {}; // { 'YYYY-MM-DD': { water: 0, protein: false, workout: false, sleep: false } }
-    let dailyHealthLogs = {}; // { 'YYYY-MM-DD': { steps: 0, activeCalories: 0, workoutName: '', durationMins: 0, source: '' } }
-    let includeActiveBurnInBudget = false;
-    let selectedSplitDay = 1;
-    let workoutLogDay = 1;
-    let workoutLogsByDate = {}; // { 'YYYY-MM-DD': { splitDay, exercises: [{ name, muscleGroup, suggested, weightKg, reps }], coreSummary, cardioSummary, savedAt } }
-    let draftWorkoutRows = [];
-    let dailyPlansCache = {}; // { 'YYYY-MM-DD': planObject }
-    let pendingAiMeal = null;
+    let allMeals = [];
+    let unsubscribeMeals = null;
     let selectedPhotoBase64 = null;
     let selectedPhotoMime = 'image/jpeg';
     let selectedLabelBase64 = null;
     let selectedLabelMime = 'image/jpeg';
     let servingMultiplier = 1;
-    let selectedMealSlot = 'Breakfast';
+    let pendingAiMeal = null;
+    let dailyPlansCache = {};
+    let selectedSplitDay = 1;
+    let workoutLogDay = 1;
+    let workoutLogsByDate = {};
+    let draftWorkoutRows = [];
+    let customShortcuts = [
+      { id: 'sc_def_1', name: '2 Phulka Roti + 1 Bowl Dal Tadka', calories: 380, protein: 16, carbs: 58, fats: 8 },
+      { id: 'sc_def_2', name: '4 Boiled Eggs (2 Whole + 2 Whites)', calories: 210, protein: 20, carbs: 2, fats: 11 },
+      { id: 'sc_def_3', name: '150g Grilled Chicken Breast + Salad', calories: 265, protein: 42, carbs: 6, fats: 6 },
+      { id: 'sc_def_4', name: '120g Paneer Bhurji (Low Oil) + 1 Roti', calories: 360, protein: 22, carbs: 26, fats: 18 }
+    ];
+    let editingShortcutId = null;
     let editingMealId = null;
-    let unsubscribeMeals = null;
+    let selectedMealSlot = 'Breakfast';
+    let dailyHabits = {};
+    let dailyHealthLogs = {};
+    let includeActiveBurnInBudget = false;
 
     window.selectMealSlot = function(slotName) {
-      selectedMealSlot = slotName || 'Breakfast';
+      selectedMealSlot = slotName;
       ['Breakfast', 'Lunch', 'Snack', 'Dinner'].forEach(slot => {
         const btn = document.getElementById(`slot-btn-${slot}`);
         if (!btn) return;
-        if (slot === selectedMealSlot) {
+        if (slot === slotName) {
           btn.className = 'meal-slot-btn py-2 px-2 rounded-xl border border-amber-500/50 bg-amber-500/20 text-amber-300 text-xs font-extrabold transition text-center';
         } else {
           btn.className = 'meal-slot-btn py-2 px-2 rounded-xl border border-gray-800 bg-gray-950 text-gray-400 hover:text-white text-xs font-bold transition text-center';
@@ -2369,6 +2367,7 @@
         renderShortcutsList();
       }
     };
+
     function compressImageFile(file, onReady) {
       const reader = new FileReader();
       reader.onload = (e) => {
