@@ -3546,7 +3546,7 @@
       if (!key) {
         throw new Error('No Gemini API key configured');
       }
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${encodeURIComponent(key)}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${encodeURIComponent(key)}`;
       const payload = {
         contents: [{ role: "user", parts }],
         generationConfig: {
@@ -3554,6 +3554,226 @@
           responseMimeType: "application/json",
           responseSchema
         }
+      };
+
+      const delays = [700, 1500];
+      for (let attempt = 0; attempt <= delays.length; attempt++) {
+        try {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 14000);
+          const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: controller.signal
+          });
+          clearTimeout(timer);
+          if (!resp.ok) throw new Error(`API ${resp.status}`);
+          const json = await resp.json();
+          const text = json.candidates?.[0]?.content?.parts?.[0]?.text;
+          const parsed = extractJsonObject(text);
+          if (!parsed) throw new Error('Empty AI response');
+          return parsed;
+        } catch (err) {
+          if (attempt === delays.length) throw err;
+          await new Promise(r => setTimeout(r, delays[attempt]));
+        }
+      }
+    }
+
+    function estimateMealFromTextFallback(text, isPhoto = false) {
+      const raw = (text || '').trim();
+      const lower = raw.toLowerCase();
+      const dietCode = getDayDietType(selectedDateStr);
+      const items = [];
+      let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFats = 0;
+
+      const addItem = (name, portion, calories, protein, carbs, fats) => {
+        items.push({ name, portion, calories, protein, carbs, fats });
+        totalCalories += calories;
+        totalProtein += protein;
+        totalCarbs += carbs;
+        totalFats += fats;
+      };
+
+      if (lower.includes('roti') || lower.includes('chapati') || lower.includes('phulka')) {
+        const countMatch = lower.match(/(\d+)\s*(roti|chapati|phulka)/);
+        const count = countMatch ? Math.min(8, Math.max(1, parseInt(countMatch[1], 10))) : 2;
+        addItem(`${count} Phulka / Chapati`, `${count} pcs`, count * 95, count * 3, count * 18, count * 1.5);
+      }
+      if (lower.includes('rice') || lower.includes('biryani') || lower.includes('pulao')) {
+        const isBiryani = lower.includes('biryani');
+        addItem(isBiryani ? 'Chicken/Veg Biryani' : 'Steamed Rice', '1 bowl (~150g)', isBiryani ? 360 : 195, isBiryani ? 18 : 4, isBiryani ? 44 : 42, isBiryani ? 12 : 0.5);
+      }
+      if (lower.includes('dal') || lower.includes('sambar') || lower.includes('rajma') || lower.includes('chole')) {
+        addItem('Dal / Lentil Bowl', '1 katori (~150g)', 165, 9, 24, 4);
+      }
+      if (lower.includes('paneer')) {
+        addItem('Paneer Dish', '~120g serving', 280, 16, 8, 20);
+      }
+      if (lower.includes('chicken')) {
+        addItem('Chicken Preparation', '~150g serving', 260, 34, 4, 11);
+      }
+      if (lower.includes('egg')) {
+        const eggMatch = lower.match(/(\d+)\s*egg/);
+        const eggs = eggMatch ? Math.min(8, Math.max(1, parseInt(eggMatch[1], 10))) : 2;
+        addItem(`${eggs} Egg(s)`, `${eggs} pcs`, eggs * 72, eggs * 6, eggs * 0.5, eggs * 5);
+      }
+      if (lower.includes('salad') || lower.includes('sabzi') || lower.includes('bhindi') || lower.includes('palak')) {
+        addItem('Veggies / Salad', '1 serving', 85, 3, 10, 3.5);
+      }
+
+      if (items.length === 0) {
+        if (isPhoto) {
+          if (dietCode === 'veg') {
+            addItem('Indian Veg Plate (2 Roti + Dal/Paneer + Salad)', '1 plate', 430, 19, 54, 14);
+          } else {
+            addItem('Balanced Indian Plate (Protein + Roti/Rice + Veggies)', '1 plate', 450, 30, 44, 15);
+          }
+        } else {
+          let cal = 380, pro = 18, carb = 45, fat = 12;
+          if (lower.includes('fish') || lower.includes('mutton')) {
+            cal = 420; pro = 32; carb = 28; fat = 16;
+          } else if (lower.includes('soya') || lower.includes('whey')) {
+            cal = 340; pro = 28; carb = 26; fat = 11;
+          }
+          addItem(raw || 'Logged Meal', '1 serving', cal, pro, carb, fat);
+        }
+      }
+
+      const mealName = raw
+        ? raw.slice(0, 48)
+        : (items.length === 1 ? items[0].name : `${items[0].name} + More`);
+
+      return {
+        mealName,
+        items,
+        totalCalories: Math.round(totalCalories),
+        totalProtein: Math.round(totalProtein),
+        totalCarbs: Math.round(totalCarbs),
+        totalFats: Math.round(totalFats),
+        coachFeedback: isPhoto
+          ? 'Photo analyzed using smart Indian portion estimator (add a Gemini API key in Profile for live vision AI). Adjust any number before logging.'
+          : 'Estimated using Indian portion baseline—adjust macros anytime before saving.'
+      };
+    }
+
+    const MEAL_ANALYSIS_SCHEMA = {
+      type: "OBJECT",
+      properties: {
+        mealName: { type: "STRING" },
+        items: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              name: { type: "STRING" },
+              portion: { type: "STRING" },
+              calories: { type: "NUMBER" },
+              protein: { type: "NUMBER" },
+              carbs: { type: "NUMBER" },
+              fats: { type: "NUMBER" }
+            }
+          }
+        },
+        totalCalories: { type: "NUMBER" },
+        totalProtein: { type: "NUMBER" },
+        totalCarbs: { type: "NUMBER" },
+        totalFats: { type: "NUMBER" },
+        coachFeedback: { type: "STRING" }
+      }
+    };
+
+    window.analyzeMealPhoto = async function() {
+      if (!selectedPhotoBase64) return;
+      const btn = document.getElementById('analyze-photo-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<span class="animate-spin inline-block w-4 h-4 border-2 border-gray-950 border-t-transparent rounded-full"></span><span>Analyzing Plate...</span>`;
+
+      const hint = document.getElementById('photo-context-hint').value.trim();
+      const dietCode = getDayDietType(selectedDateStr);
+      const prompt = `You are an expert Indian nutritionist and macro tracker. Analyze this food photo carefully (considering Indian bowls/katoris, rotis/chapatis, rice, curries, dals, paneer, chicken, eggs, snacks). ${hint ? `User note: "${hint}".` : ''} Today's diet tag is ${getDietLabel(dietCode)}.
+Break down each visible food item with estimated portion, calories, protein (g), carbs (g), and fats (g), sum the totals accurately, and give 1-2 sentences of practical coaching feedback for ${userProfile.name} (goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.proteinGrams}g). Return strictly valid JSON.`;
+
+      try {
+        const data = await callGeminiJson([
+          { text: prompt },
+          { inlineData: { mimeType: selectedPhotoMime, data: selectedPhotoBase64 } }
+        ], MEAL_ANALYSIS_SCHEMA);
+        openAiReviewCard(data);
+        showToast('Plate analyzed! Review & tap Confirm.', 'success');
+      } catch (err) {
+        const fallbackData = estimateMealFromTextFallback(hint, true);
+        openAiReviewCard(fallbackData);
+        showToast('Plate estimated! Edit macros if needed & tap Confirm.', 'success');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Analyze Plate with AI</span>`;
+      }
+    };
+
+    window.appendFoodChip = function(snippet) {
+      const ta = document.getElementById('meal-text-input');
+      ta.value = ta.value ? `${ta.value}, ${snippet}` : snippet;
+    };
+
+    window.analyzeMealText = async function() {
+      const text = document.getElementById('meal-text-input').value.trim();
+      if (!text) {
+        showToast('Please describe what you ate first.', 'info');
+        return;
+      }
+
+      const btn = document.getElementById('analyze-text-btn');
+      btn.disabled = true;
+      btn.textContent = 'Calculating Macros...';
+
+      const prompt = `You are an Indian nutrition coach. Estimate realistic calories, protein (g), carbs (g), and fats (g) for this meal description: "${text}".
+User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.proteinGrams}g. Break down items and give brief actionable coaching feedback.`;
+
+      try {
+        const data = await callGeminiJson([{ text: prompt }], MEAL_ANALYSIS_SCHEMA);
+        openAiReviewCard(data);
+      } catch (err) {
+        const fallback = estimateMealFromTextFallback(text, false);
+        openAiReviewCard(fallback);
+        showToast('Estimated macros ready—review & confirm!', 'success');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Calculate Indian Nutrition from Text';
+      }
+    };
+
+    function openAiReviewCard(data) {
+      pendingAiMeal = data;
+      document.getElementById('rev-meal-name').value = data.mealName || 'Analyzed Meal';
+      document.getElementById('rev-cal').value = Math.round(data.totalCalories || 0);
+      document.getElementById('rev-pro').value = Math.round(data.totalProtein || 0);
+      document.getElementById('rev-carb').value = Math.round(data.totalCarbs || 0);
+      document.getElementById('rev-fat').value = Math.round(data.totalFats || 0);
+      document.getElementById('rev-coach-note').textContent = data.coachFeedback || 'Logged into your daily macro tracker.';
+
+      const itemsContainer = document.getElementById('rev-items-list');
+      if (Array.isArray(data.items) && data.items.length > 0) {
+        itemsContainer.innerHTML = data.items.map(it => `
+          <div class="flex items-center justify-between gap-2 py-1 border-b border-gray-800/70 last:border-none">
+            <div class="truncate">
+              <span class="font-semibold text-white">${escapeHtml(it.name)}</span>
+              ${it.portion ? `<span class="text-gray-500 ml-1">(${escapeHtml(it.portion)})</span>` : ''}
+            </div>
+            <div class="text-[11px] text-gray-300 shrink-0 font-semibold">
+              ${Math.round(it.calories || 0)} kcal • <span class="text-emerald-400">${Math.round(it.protein || 0)}g P</span>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        itemsContainer.innerHTML = `<div class="text-gray-400">Totals estimated for your meal.</div>`;
+      }
+
+      const card = document.getElementById('ai-review-card');
+      card.classList.remove('hidden');
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
       };
 
       const delays = [700, 1500];
