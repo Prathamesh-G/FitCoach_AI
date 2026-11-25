@@ -68,14 +68,46 @@
     .bottom-nav-safe { padding-bottom: max(0.85rem, env(safe-area-inset-bottom)); }
 
     /* Hide any injected external bottom promo/report footers on mobile preview frames */
+    /* Responsive layout and readable typography */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    body { overflow-x: hidden; font-size: 14px; line-height: 1.5; }
+    #app-shell { width: 100%; min-width: 0; }
+    #app-shell main { min-width: 0; }
+    #app-shell button, #app-shell input, #app-shell select, #app-shell textarea { min-width: 0; }
+    #app-shell button { line-height: 1.35; }
+    #app-shell input, #app-shell select, #app-shell textarea { font-size: 16px; line-height: 1.4; }
+    #app-shell h1, #app-shell h2, #app-shell h3, #app-shell h4,
+    #app-shell p, #app-shell label, #app-shell span { overflow-wrap: anywhere; }
+    #app-shell .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; overflow-wrap: normal; }
+    #app-shell .grid, #app-shell .flex { min-width: 0; }
+    @media (min-width: 769px) {
+      #app-shell main { padding-left: clamp(1.25rem, 3vw, 2.5rem); padding-right: clamp(1.25rem, 3vw, 2.5rem); }
+      #app-shell .text-\[9px\] { font-size: 10px; }
+      #app-shell .text-\[10px\] { font-size: 11px; }
+      #app-shell .text-\[11px\] { font-size: 12px; }
+    }
     @media (max-width: 768px) {
-      [data-testid*="report"],
-      [data-testid*="canvas"],
-      [class*="report-unsafe"],
-      [class*="try-gemini"],
-      footer:not(.app-footer) {
-        display: none !important;
-      }
+      body { font-size: 14px; }
+      #app-shell main { padding-left: 12px !important; padding-right: 12px !important; }
+      #app-shell .text-\[9px\] { font-size: 10px; }
+      #app-shell .text-\[10px\] { font-size: 11px; }
+      #app-shell .text-\[11px\] { font-size: 12px; }
+      #app-shell .text-xs { font-size: 12px; line-height: 1.45; }
+      #app-shell .text-sm { line-height: 1.45; }
+      #app-shell button { min-height: 36px; }
+      #app-shell .meal-slot-btn { padding-left: 3px; padding-right: 3px; font-size: 11px; }
+      #app-shell .grid-cols-4 { column-gap: 6px; }
+      #app-shell .rounded-3xl { border-radius: 20px; }
+      #app-shell .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 12px; }
+      [data-testid*="report"], [data-testid*="canvas"], [class*="report-unsafe"],
+      [class*="try-gemini"], footer:not(.app-footer) { display: none !important; }
+    }
+    @media (max-width: 380px) {
+      #app-shell .text-lg { font-size: 17px; }
+      #app-shell .text-base { font-size: 14px; }
+      #app-shell .meal-slot-btn { font-size: 10px; }
+      #app-shell .p-5 { padding: 14px; }
     }
   </style>
 </head>
@@ -334,7 +366,7 @@
   <!-- ===================================================================== -->
   <!-- 2. MAIN APP SHELL (Tabs: Dashboard, Snap/Log, Daily Plan, Workout, Profile) -->
   <!-- ===================================================================== -->
-  <div id="app-shell" class="hidden min-h-screen pb-safe max-w-lg mx-auto">
+  <div id="app-shell" class="hidden min-h-screen pb-safe w-full max-w-5xl mx-auto">
 
     <!-- Edit Logged Meal Modal -->
     <div id="edit-meal-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-4">
@@ -631,6 +663,32 @@
 
     <!-- TAB 2: SNAP / AI FOOD ANALYZER, LABEL LOOKUP & CUSTOM SHORTCUTS -->
     <main id="tab-log" class="hidden p-4 space-y-4">
+      <!-- Date selector: all meal entries created here are assigned to this selected day -->
+      <section class="bg-gray-900/90 border border-gray-800 rounded-2xl p-3 space-y-2" aria-label="Select log date">
+        <div class="flex items-center justify-between gap-2">
+          <button type="button" onclick="changeSelectedDate(-1)" class="px-3 py-2 rounded-xl bg-gray-800 text-gray-200 text-xs font-bold" aria-label="Previous day">‹ Prev</button>
+          <div class="text-center min-w-0 flex-1">
+            <div class="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Logging for</div>
+            <div id="log-selected-date-label" class="text-sm font-extrabold text-white">Today</div>
+          </div>
+          <button type="button" onclick="changeSelectedDate(1)" class="px-3 py-2 rounded-xl bg-gray-800 text-gray-200 text-xs font-bold" aria-label="Next day">Next ›</button>
+        </div>
+        <div class="flex items-center gap-2">
+          <label for="log-date-picker" class="text-xs text-gray-400 font-semibold shrink-0">📅 Date</label>
+          <input id="log-date-picker" type="date" class="flex-1 min-w-0 px-3 py-2 rounded-xl bg-gray-950 border border-gray-700 text-white text-sm" onchange="selectCalendarDate(this.value)" />
+          <button type="button" onclick="jumpToTodayDate(); syncLogDatePicker()" class="px-3 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold">Today</button>
+        </div>
+        <p class="text-[11px] text-gray-500">Choose a past date to add, edit or delete meals for that day.</p>
+      </section>
+      <section class="bg-gray-900/80 border border-gray-800 rounded-2xl p-3 space-y-2">
+        <div class="flex items-center justify-between gap-2">
+          <h3 class="text-sm font-extrabold text-white">Meals for selected date</h3>
+          <span id="log-meal-count-badge" class="text-[11px] text-gray-400">0 meals</span>
+        </div>
+        <div id="log-page-meal-list" class="space-y-2.5">
+          <p class="text-xs text-gray-500 text-center py-3">No meals logged for this date yet.</p>
+        </div>
+      </section>
       <div class="bg-gray-900 border border-gray-800 rounded-3xl p-5">
         <h2 class="text-lg font-extrabold text-white mb-1">Log Your Meal</h2>
         <p class="text-xs text-gray-400 mb-3">Pick a meal slot below, then snap a plate or label, look up packaged foods, or tap a shortcut.</p>
@@ -1446,11 +1504,25 @@
     };
 
     window.selectCalendarDate = function(ymd) {
+      if (!ymd) return;
       selectedDateStr = ymd;
       loadDraftForWorkoutDay();
       renderDashboard();
       updatePlanHeader();
       renderWorkoutLogTab();
+      syncLogDatePicker();
+    };
+
+    window.syncLogDatePicker = function() {
+      const picker = document.getElementById('log-date-picker');
+      const label = document.getElementById('log-selected-date-label');
+      if (picker) picker.value = selectedDateStr;
+      if (label) {
+        const d = parseYMD(selectedDateStr);
+        label.textContent = selectedDateStr === getTodayDateStr()
+          ? 'Today'
+          : d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+      }
     };
 
     function renderFoodCalendarGrid() {
@@ -2578,6 +2650,7 @@
       document.getElementById('selected-date-label').textContent =
         selectedDateStr === todayStr ? 'Today' : dObj.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
       document.getElementById('selected-date-sub').textContent = `${DAYS_FULL[dayIdx]} • ${getDietLabel(dietCode)}`;
+      if (typeof window.syncLogDatePicker === 'function') window.syncLogDatePicker();
 
       const foodDrawer = document.getElementById('food-calendar-drawer');
       if (foodDrawer && !foodDrawer.classList.contains('hidden')) {
@@ -2661,6 +2734,10 @@
             <p class="text-[11px] text-gray-500 mt-1">Snap a photo of your plate, scan a label, or tap a shortcut.</p>
           </div>
         `;
+        const logPageList = document.getElementById('log-page-meal-list');
+        const logPageCount = document.getElementById('log-meal-count-badge');
+        if (logPageList) logPageList.innerHTML = listEl.innerHTML;
+        if (logPageCount) logPageCount.textContent = '0 meals';
         return;
       }
 
@@ -2693,6 +2770,10 @@
           </div>
         `;
       }).join('');
+      const logPageList = document.getElementById('log-page-meal-list');
+      const logPageCount = document.getElementById('log-meal-count-badge');
+      if (logPageList) logPageList.innerHTML = listEl.innerHTML;
+      if (logPageCount) logPageCount.textContent = `${dayMeals.length} meal${dayMeals.length === 1 ? '' : 's'}`;
     }
 
     function renderProfileTab() {
@@ -3123,6 +3204,9 @@
         try {
           const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'meals', mealId);
           await deleteDoc(docRef);
+          allMeals = allMeals.filter(m => m.id !== mealId);
+          persistFallbackState();
+          renderDashboard();
           showToast('Meal removed', 'info');
           return;
         } catch (e) {}
@@ -3184,6 +3268,8 @@
         try {
           const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'meals', targetId);
           await updateDoc(docRef, updatedFields);
+          allMeals = allMeals.map(m => m.id === targetId ? { ...m, ...updatedFields } : m);
+          renderDashboard();
           showToast('Meal updated!', 'success');
           return;
         } catch (e) {}
