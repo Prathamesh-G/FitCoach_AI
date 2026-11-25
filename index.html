@@ -3238,10 +3238,16 @@
       }
     };
 
-    function compressImageFile(file, onReady) {
+    function compressImageFile(file, onReady, onError = () => {}) {
+      if (!file || !file.type?.startsWith('image/')) {
+        onError(new Error('Please select a valid image file.'));
+        return;
+      }
       const reader = new FileReader();
+      reader.onerror = () => onError(new Error('Could not read the selected image.'));
       reader.onload = (e) => {
         const img = new Image();
+        img.onerror = () => onError(new Error('This image format could not be opened. Try a JPG or PNG.'));
         img.onload = () => {
           const canvas = document.createElement('canvas');
           const maxDim = 900;
@@ -3271,6 +3277,9 @@
     window.handlePhotoSelected = function(event) {
       const file = event.target.files?.[0];
       if (!file) return;
+      selectedPhotoBase64 = null;
+      const analyzeBtn = document.getElementById('analyze-photo-btn');
+      analyzeBtn.disabled = true;
       compressImageFile(file, (dataUrl, base64, mime) => {
         selectedPhotoBase64 = base64;
         selectedPhotoMime = mime;
@@ -3278,7 +3287,10 @@
         preview.src = dataUrl;
         preview.classList.remove('hidden');
         document.getElementById('photo-placeholder').classList.add('hidden');
-        document.getElementById('analyze-photo-btn').disabled = false;
+        analyzeBtn.disabled = false;
+      }, (err) => {
+        showToast(err.message || 'Unable to load this photo.', 'error');
+        event.target.value = '';
       });
     };
 
@@ -3595,7 +3607,8 @@
       if (!key) {
         throw new Error('No Gemini API key configured');
       }
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${encodeURIComponent(key)}`;
+      // Use a stable, current multimodal model rather than the older preview ID.
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(key)}`;
       const payload = {
         contents: [{ role: "user", parts }],
         generationConfig: {
@@ -3609,21 +3622,34 @@
       for (let attempt = 0; attempt <= delays.length; attempt++) {
         try {
           const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 14000);
-          const resp = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-            signal: controller.signal
-          });
-          clearTimeout(timer);
-          if (!resp.ok) throw new Error(`API ${resp.status}`);
+          const timer = setTimeout(() => controller.abort(), 25000);
+          let resp;
+          try {
+            resp = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+              signal: controller.signal
+            });
+          } finally {
+            clearTimeout(timer);
+          }
+          if (!resp.ok) {
+            let detail = '';
+            try { detail = (await resp.json()).error?.message || ''; } catch (_) {}
+            const err = new Error(`Gemini API ${resp.status}${detail ? ': ' + detail : ''}`);
+            err.status = resp.status;
+            throw err;
+          }
           const json = await resp.json();
           const text = json.candidates?.[0]?.content?.parts?.[0]?.text;
           const parsed = extractJsonObject(text);
           if (!parsed) throw new Error('Empty AI response');
           return parsed;
         } catch (err) {
+          // Retry transient network/rate/server errors only; invalid keys and bad
+          // requests should surface immediately instead of wasting the user's time.
+          if (err.status && err.status < 500 && err.status !== 429) throw err;
           if (attempt === delays.length) throw err;
           await new Promise(r => setTimeout(r, delays[attempt]));
         }
@@ -3734,7 +3760,14 @@
     };
 
     window.analyzeMealPhoto = async function() {
-      if (!selectedPhotoBase64) return;
+      if (!selectedPhotoBase64) {
+        showToast('Choose a meal photo first.', 'info');
+        return;
+      }
+      if (!getActiveGeminiKey()) {
+        showToast('Live photo AI needs a Gemini API key. Add it in Profile → Gemini API Key, then try again.', 'error');
+        return;
+      }
       const btn = document.getElementById('analyze-photo-btn');
       btn.disabled = true;
       btn.innerHTML = `<span class="animate-spin inline-block w-4 h-4 border-2 border-gray-950 border-t-transparent rounded-full"></span><span>Analyzing Plate...</span>`;
@@ -3752,9 +3785,17 @@ Break down each visible food item with estimated portion, calories, protein (g),
         openAiReviewCard(data);
         showToast('Plate analyzed! Review & tap Confirm.', 'success');
       } catch (err) {
-        const fallbackData = estimateMealFromTextFallback(hint, true);
-        openAiReviewCard(fallbackData);
-        showToast('Plate estimated! Edit macros if needed & tap Confirm.', 'success');
+        console.error('Meal photo analysis failed:', err);
+        const message = err?.status === 401 || err?.status === 403
+          ? 'Gemini rejected the API key. Check the key and its Gemini API permissions in Profile.'
+          : err?.status === 404
+            ? 'The Gemini model/API endpoint was not found. Check that your Gemini API project has model access.'
+            : err?.status === 429
+              ? 'Gemini rate limit reached. Wait a moment and try again.'
+              : err?.name === 'AbortError'
+                ? 'Photo analysis timed out. Try a smaller or clearer image.'
+                : 'Photo analysis failed. Check your internet connection and Gemini API key, then retry.';
+        showToast(message, 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = `<span>Analyze Plate with AI</span>`;
