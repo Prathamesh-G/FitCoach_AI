@@ -646,7 +646,7 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
           </div>
           <div class="text-sm font-bold text-white">Today's Diet Plan</div>
-          <div class="text-[11px] text-amber-300/80">Indian meals & 5-day split</div>
+          <div class="text-[11px] text-amber-300/80">Indian meal suggestions + recipes</div>
         </button>
       </section>
 
@@ -1004,26 +1004,11 @@
           </span>
           <span id="plan-target-pill" class="text-xs font-semibold text-gray-400">1850 kcal • 135g P</span>
         </div>
-        <h2 class="text-lg font-extrabold text-white">Indian Diet & 5-Day Muscle Split</h2>
-        <p class="text-xs text-gray-400 mt-1 mb-3">Generates today's Veg/Non-Veg Indian meals plus a complete 5-day muscle group rotation with core & cardio.</p>
-
-        <!-- 5-Day Muscle Split Selector -->
-        <div class="mb-4">
-          <div class="flex items-center justify-between mb-1.5">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400">5-Day Split Focus</span>
-            <span class="text-[10px] text-amber-400">All include Core + Cardio</span>
-          </div>
-          <div class="grid grid-cols-5 gap-1.5 text-[10px] font-bold">
-            <button type="button" onclick="selectSplitDay(1)" id="split-btn-1" class="split-pill py-2 px-1 rounded-xl border border-amber-500/50 bg-amber-500/20 text-amber-300 text-center transition">D1<br/><span class="text-[9px]">Chest/Tri</span></button>
-            <button type="button" onclick="selectSplitDay(2)" id="split-btn-2" class="split-pill py-2 px-1 rounded-xl border border-gray-800 bg-gray-950 text-gray-400 text-center transition">D2<br/><span class="text-[9px]">Back/Bi</span></button>
-            <button type="button" onclick="selectSplitDay(3)" id="split-btn-3" class="split-pill py-2 px-1 rounded-xl border border-gray-800 bg-gray-950 text-gray-400 text-center transition">D3<br/><span class="text-[9px]">Legs</span></button>
-            <button type="button" onclick="selectSplitDay(4)" id="split-btn-4" class="split-pill py-2 px-1 rounded-xl border border-gray-800 bg-gray-950 text-gray-400 text-center transition">D4<br/><span class="text-[9px]">Shoulders</span></button>
-            <button type="button" onclick="selectSplitDay(5)" id="split-btn-5" class="split-pill py-2 px-1 rounded-xl border border-gray-800 bg-gray-950 text-gray-400 text-center transition">D5<br/><span class="text-[9px]">Upper/Arms</span></button>
-          </div>
-        </div>
+        <h2 class="text-lg font-extrabold text-white">Indian Meal Planner</h2>
+        <p class="text-xs text-gray-400 mt-1 mb-3">Generates meals based on the selected day of the week and your dietary preference, with recipes for every suggested meal.</p>
 
         <button id="generate-plan-btn" onclick="generateDailyPlan()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-gray-950 font-extrabold text-sm shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2">
-          <span>✨ Generate Meal Plan & 5-Day Split</span>
+          <span>✨ Generate Today's Meal Plan</span>
         </button>
       </div>
 
@@ -1442,7 +1427,6 @@
     let servingMultiplier = 1;
     let pendingAiMeal = null;
     let dailyPlansCache = {};
-    let selectedSplitDay = 1;
     let workoutLogDay = 1;
     let workoutLogsByDate = {};
     let draftWorkoutRows = [];
@@ -4012,22 +3996,6 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
       5: { short: 'Upper/Arms', label: 'Day 5: Upper Body Balance & Arms + Core & Cardio' }
     };
 
-    window.selectSplitDay = function(dayNum) {
-      selectedSplitDay = Number(dayNum) || 1;
-      for (let i = 1; i <= 5; i++) {
-        const btn = document.getElementById(`split-btn-${i}`);
-        if (!btn) continue;
-        if (i === selectedSplitDay) {
-          btn.className = 'split-pill py-2 px-1 rounded-xl border border-amber-500/50 bg-amber-500/20 text-amber-300 text-center transition';
-        } else {
-          btn.className = 'split-pill py-2 px-1 rounded-xl border border-gray-800 bg-gray-950 text-gray-400 text-center transition';
-        }
-      }
-      if (dailyPlansCache[selectedDateStr]) {
-        renderGeneratedPlan(dailyPlansCache[selectedDateStr]);
-      }
-    };
-
     function updatePlanHeader() {
       if (!userProfile) return;
       const dObj = parseYMD(selectedDateStr);
@@ -4253,7 +4221,7 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
       ];
 
       return {
-        dayFocus: `${dayName} (${getDietLabel(dietCode)}): Hit ~${proteinGrams}g protein across meals, keep cooking oil measured, and push progressive overload in your workout log.`,
+        dayFocus: `${dayName} (${getDietLabel(dietCode)}): Aim for ~${proteinGrams}g protein across meals and measure cooking oil and portions.`,
         meals,
         weeklySplit
       };
@@ -4278,54 +4246,14 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
             }
           }
         },
-        weeklySplit: {
-          type: "ARRAY",
-          items: {
-            type: "OBJECT",
-            properties: {
-              dayNumber: { type: "NUMBER" },
-              splitTitle: { type: "STRING" },
-              duration: { type: "STRING" },
-              muscleExercises: {
-                type: "ARRAY",
-                items: {
-                  type: "OBJECT",
-                  properties: {
-                    name: { type: "STRING" },
-                    muscleGroup: { type: "STRING" },
-                    setsReps: { type: "STRING" },
-                    tip: { type: "STRING" }
-                  }
-                }
-              },
-              coreExercises: {
-                type: "ARRAY",
-                items: {
-                  type: "OBJECT",
-                  properties: {
-                    name: { type: "STRING" },
-                    setsReps: { type: "STRING" }
-                  }
-                }
-              },
-              cardioBlock: {
-                type: "OBJECT",
-                properties: {
-                  protocol: { type: "STRING" },
-                  duration: { type: "STRING" },
-                  targetCalories: { type: "STRING" }
-                }
-              }
-            }
-          }
-        }
+
       }
     };
 
     window.generateDailyPlan = async function() {
       const btn = document.getElementById('generate-plan-btn');
       btn.disabled = true;
-      btn.innerHTML = `<span class="animate-spin inline-block w-4 h-4 border-2 border-gray-950 border-t-transparent rounded-full"></span><span>Building Meals & 5-Day Split...</span>`;
+      btn.innerHTML = `<span class="animate-spin inline-block w-4 h-4 border-2 border-gray-950 border-t-transparent rounded-full"></span><span>Building Today's Meal Plan...</span>`;
 
       const dObj = parseYMD(selectedDateStr);
       const dayName = DAYS_FULL[dObj.getDay()];
@@ -4338,26 +4266,16 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
         ? 'EGGETARIAN (Vegetarian + Eggs allowed, NO chicken/mutton/fish).'
         : 'NON-VEGETARIAN ALLOWED (Include lean Indian non-veg like chicken breast, egg whites, fish tikka alongside roti/rice/dal).';
 
-      const prompt = `Create a practical, delicious 1-day Indian meal plan (4 meals: Breakfast, Lunch, Evening Snack, Dinner) AND a complete 5-day gym workout split covering every major muscle group for ${userProfile.name} (${userProfile.age}yo ${userProfile.gender}, ${userProfile.height}cm, ${userProfile.weight}kg, BMI ${m.bmi}, Goal: ${userProfile.goal}).
+      const prompt = `Create a practical, delicious 1-day Indian meal plan (4 meals: Breakfast, Lunch, Evening Snack, Dinner) for ${userProfile.name} (${userProfile.age}yo ${userProfile.gender}, ${userProfile.height}cm, ${userProfile.weight}kg, BMI ${m.bmi}, Goal: ${userProfile.goal}).
 Today is ${dayName}. Dietary Rule for today: ${dietRule}
-Total daily macros across the 4 meals should closely match: ~${m.targetCalories} kcal and ~${m.proteinGrams}g protein.
-
-For weeklySplit, provide ALL 5 DAYS (dayNumber 1 to 5):
-- Day 1: Chest & Triceps
-- Day 2: Back & Biceps
-- Day 3: Legs (Quads, Hamstrings, Glutes & Calves)
-- Day 4: Shoulders & Traps
-- Day 5: Upper Body Balance & Arms
-EVERY single day (Days 1 through 5) MUST include:
-1. 4-5 targeted muscleExercises (with muscleGroup, setsReps, and form tip)
-2. 2-3 dedicated coreExercises (e.g., hanging leg raises, cable crunches, planks, Russian twists)
-3. A specific cardioBlock (protocol like incline treadmill walk / cycling / HIIT intervals, duration, and estimated burn) tailored for fat loss.`;
+Total daily macros across the 4 meals should closely match: ~${m.targetCalories} kcal, ~${m.proteinGrams}g protein, ~${m.carbGrams}g carbs and ~${m.fatGrams}g fat.
+For each meal, provide a realistic meal title, Indian ingredients/food description, and estimated calories, protein, carbs and fats. Use practical Indian household portions and distribute protein across the day. Do not include workout plans or workout splits.`;
 
       try {
         const plan = await callGeminiJson([{ text: prompt }], DAILY_PLAN_SCHEMA);
         dailyPlansCache[selectedDateStr] = plan;
         renderGeneratedPlan(plan);
-        showToast('AI Meal plan & 5-day muscle split ready!', 'success');
+        showToast('Today’s Indian meal plan is ready!', 'success');
       } catch (err) {
         const fallbackPlan = buildSmartFallbackPlan({
           dietCode,
@@ -4369,10 +4287,10 @@ EVERY single day (Days 1 through 5) MUST include:
         });
         dailyPlansCache[selectedDateStr] = fallbackPlan;
         renderGeneratedPlan(fallbackPlan);
-        showToast('Generated tailored plan via Smart Coach fallback!', 'success');
+        showToast('Generated today’s meal suggestions with Smart Coach!', 'success');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<span>✨ Regenerate Meal Plan & 5-Day Split</span>`;
+        btn.innerHTML = `<span>✨ Regenerate Today's Meal Plan</span>`;
       }
     };
 
@@ -4398,78 +4316,6 @@ EVERY single day (Days 1 through 5) MUST include:
         </div>
       `).join('');
 
-      const splitList = plan.weeklySplit || [];
-      const activeDayObj = splitList.find(d => Number(d.dayNumber) === selectedSplitDay) || splitList[0];
-
-      let workoutSectionHtml = '';
-      if (activeDayObj) {
-        const muscleExHtml = (activeDayObj.muscleExercises || []).map(ex => `
-          <div class="bg-gray-950/90 border border-gray-800/80 rounded-xl p-3">
-            <div class="flex items-center justify-between gap-2">
-              <div>
-                <span class="text-xs font-bold text-white">${escapeHtml(ex.name)}</span>
-                ${ex.muscleGroup ? `<span class="ml-1.5 px-1.5 py-0.5 rounded bg-gray-800 text-[9px] font-bold text-amber-300 uppercase">${escapeHtml(ex.muscleGroup)}</span>` : ''}
-              </div>
-              <span class="text-[11px] font-extrabold text-emerald-400 shrink-0">${escapeHtml(ex.setsReps)}</span>
-            </div>
-            <p class="text-[11px] text-gray-400 mt-1">${escapeHtml(ex.tip)}</p>
-          </div>
-        `).join('');
-
-        const coreExHtml = (activeDayObj.coreExercises || []).map(c => `
-          <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-gray-950/70 border border-gray-800/70 text-xs">
-            <span class="font-semibold text-gray-200">${escapeHtml(c.name)}</span>
-            <span class="text-[11px] font-bold text-sky-400">${escapeHtml(c.setsReps)}</span>
-          </div>
-        `).join('');
-
-        const cardio = activeDayObj.cardioBlock || {};
-        const cardioHtml = cardio.protocol ? `
-          <div class="bg-gray-950/80 border border-amber-500/25 rounded-xl p-3 flex items-center justify-between gap-2">
-            <div>
-              <div class="text-xs font-bold text-amber-300">${escapeHtml(cardio.protocol)}</div>
-              <div class="text-[11px] text-gray-400">${escapeHtml(cardio.duration || '')}</div>
-            </div>
-            <span class="text-[11px] font-extrabold text-emerald-400 shrink-0">${escapeHtml(cardio.targetCalories || '')}</span>
-          </div>
-        ` : '';
-
-        workoutSectionHtml = `
-          <div class="bg-gray-900 border border-gray-800 rounded-3xl p-4 space-y-3">
-            <div class="flex items-center justify-between gap-2">
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400">Day ${activeDayObj.dayNumber || selectedSplitDay} of 5</span>
-                <h4 class="text-sm font-extrabold text-white">${escapeHtml(activeDayObj.splitTitle || SPLIT_DEFINITIONS[selectedSplitDay]?.label || '')}</h4>
-              </div>
-              <span class="text-[11px] font-bold text-gray-400 shrink-0">${escapeHtml(activeDayObj.duration || '45-60 min')}</span>
-            </div>
-
-            <div class="space-y-2">
-              <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Muscle Group Exercises</div>
-              ${muscleExHtml}
-            </div>
-
-            ${coreExHtml ? `
-              <div class="space-y-1.5 pt-1">
-                <div class="text-[10px] font-bold uppercase tracking-wider text-sky-400">Core & Abs</div>
-                ${coreExHtml}
-              </div>
-            ` : ''}
-
-            ${cardioHtml ? `
-              <div class="space-y-1.5 pt-1">
-                <div class="text-[10px] font-bold uppercase tracking-wider text-amber-400">Cardio Finisher</div>
-                ${cardioHtml}
-              </div>
-            ` : ''}
-
-            <button type="button" onclick="openWorkoutLogForSplitDay(${activeDayObj.dayNumber || selectedSplitDay})" class="w-full py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 text-amber-300 text-xs font-bold transition">
-              🏋️ Log Weight & Reps for Day ${activeDayObj.dayNumber || selectedSplitDay}
-            </button>
-          </div>
-        `;
-      }
-
       container.innerHTML = `
         ${plan.dayFocus ? `
           <div class="bg-emerald-500/10 border border-emerald-500/25 rounded-2xl p-3 text-xs text-emerald-200">
@@ -4480,7 +4326,6 @@ EVERY single day (Days 1 through 5) MUST include:
           <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-400 px-1">Today's Indian Meals</h3>
           ${mealsHtml}
         </div>
-        ${workoutSectionHtml}
       `;
     }
 
