@@ -513,6 +513,96 @@ html[data-theme="light"] #app-shell .mm-credit svg,html[data-theme="light"] #app
 html[data-theme="light"] #app-shell .mm-credit p:last-child {color:#172b24 !important;}
 @media(max-width:640px) {#app-shell {padding-bottom:calc(8rem + env(safe-area-inset-bottom, 0px));} #app-shell .mm-credit .mm-credit-accent {display:block;}}
 </style>
+
+  <style id="mettlemap-meal-plan-cta-fix">
+    /* Meal plan CTA: force readable contrast and a raised pill button in all themes */
+    #generate-plan-btn {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      min-height: 58px;
+      border-radius: 9999px !important;
+      padding: 0.95rem 1.35rem !important;
+      border: 1px solid rgba(255,255,255,0.12) !important;
+      background: linear-gradient(180deg, #ffd27a 0%, #ffb547 48%, #f78d1e 100%) !important;
+      color: #17211d !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.01em;
+      box-shadow:
+        0 14px 26px rgba(245, 143, 28, 0.28),
+        0 7px 0 rgba(146, 78, 6, 0.95),
+        inset 0 1px 0 rgba(255,255,255,0.75),
+        inset 0 -10px 18px rgba(168, 81, 0, 0.16) !important;
+      transform: translateY(0);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+    #generate-plan-btn::before {
+      content: "";
+      position: absolute;
+      inset: 1px 1px auto 1px;
+      height: 52%;
+      border-radius: 9999px;
+      background: linear-gradient(180deg, rgba(255,255,255,.52), rgba(255,255,255,.12));
+      pointer-events: none;
+      z-index: 0;
+    }
+    #generate-plan-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18);
+      pointer-events: none;
+      z-index: 0;
+    }
+    #generate-plan-btn > span, #generate-plan-btn > svg {
+      position: relative;
+      z-index: 1;
+      color: inherit !important;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.18);
+    }
+    #generate-plan-btn:hover {
+      filter: brightness(1.04);
+      transform: translateY(-1px);
+      box-shadow:
+        0 16px 28px rgba(245, 143, 28, 0.34),
+        0 8px 0 rgba(146, 78, 6, 0.95),
+        inset 0 1px 0 rgba(255,255,255,0.78),
+        inset 0 -10px 18px rgba(168, 81, 0, 0.18) !important;
+    }
+    #generate-plan-btn:active {
+      transform: translateY(4px);
+      box-shadow:
+        0 8px 18px rgba(245, 143, 28, 0.24),
+        0 3px 0 rgba(146, 78, 6, 0.95),
+        inset 0 1px 0 rgba(255,255,255,0.65),
+        inset 0 -8px 16px rgba(168, 81, 0, 0.18) !important;
+    }
+    html[data-theme="dark"] #generate-plan-btn {
+      border-color: rgba(255, 220, 150, 0.28) !important;
+      box-shadow:
+        0 16px 28px rgba(245, 143, 28, 0.26),
+        0 7px 0 rgba(108, 57, 2, 0.98),
+        inset 0 1px 0 rgba(255,255,255,0.72),
+        inset 0 -10px 18px rgba(118, 53, 0, 0.24) !important;
+    }
+    html[data-theme="light"] #generate-plan-btn {
+      border-color: rgba(203, 103, 0, 0.22) !important;
+      box-shadow:
+        0 14px 24px rgba(245, 143, 28, 0.18),
+        0 7px 0 rgba(156, 90, 11, 0.82),
+        inset 0 1px 0 rgba(255,255,255,0.82),
+        inset 0 -10px 18px rgba(168, 81, 0, 0.14) !important;
+    }
+    @media (max-width: 480px) {
+      #generate-plan-btn {
+        min-height: 54px;
+        padding: 0.9rem 1.1rem !important;
+        font-size: 0.95rem !important;
+      }
+    }
+  </style>
+
 </head>
 <body class="min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
 
@@ -1437,7 +1527,7 @@ html[data-theme="light"] #app-shell .mm-credit p:last-child {color:#172b24 !impo
         <h2 class="text-lg font-extrabold text-white">Indian Meal Planner</h2>
         <p class="text-xs text-gray-400 mt-1 mb-3">Generates meals based on the selected day of the week and your dietary preference, with recipes for every suggested meal.</p>
 
-        <button id="generate-plan-btn" onclick="generateDailyPlan()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-gray-950 font-extrabold text-sm shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2">
+        <button id="generate-plan-btn" type="button" onclick="generateDailyPlan()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-gray-950 font-extrabold text-sm shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2">
           <span>✨ Generate Today's Meal Plan</span>
         </button>
         <p class="text-[10px] text-gray-500 text-center mt-2">Saved on this device for the selected date. Reopen the app to continue using today's plan; regenerate only when you want a fresh one.</p>
