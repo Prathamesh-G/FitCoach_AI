@@ -553,6 +553,7 @@ html[data-theme="light"] #app-shell {--mm-surface:#fff;--mm-inset:#edf4ef;--mm-e
 @media(prefers-reduced-motion:reduce){#app-shell main button{transition:none!important;}#app-shell main button:active:not(:disabled){transform:none!important;}}
 html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[class~="bg-teal-500"],[class~="bg-amber-500"],[class~="bg-orange-500"]):not(.theme-choice):not(.feedback-choice):not(.mult-btn):not([id^="log-mode-"]):not([id^="wh-range-"]):not([id^="slot-btn-"]):not(:disabled){background-color:#10b981!important;background-image:linear-gradient(100deg,#10b981,#a3e635)!important;color:#092c20!important;}
 </style>
+<style id="mm-meal-frequency-style">#app-shell .mm-meal-frequency{display:grid;gap:8px;min-width:0}#app-shell .mm-meal-frequency label{font-size:13px;font-weight:750;color:var(--mp-ink)}#app-shell #mm-meal-count{width:100%;min-height:46px;border:1px solid var(--mm-edge);border-radius:16px;padding:10px 14px;font-weight:700}#app-shell #mm-meal-count-note{font-size:12px;color:var(--mp-muted);line-height:1.5}</style>
 </head>
 <body class="min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
 
@@ -728,10 +729,7 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
 
       <!-- Body Fat % (Optional / Sustainable Recomp Context) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Body Fat % (Est.)</label>
-          <input type="number" id="inp-bodyfat" min="4" max="60" step="0.5" placeholder="27" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-950 border border-gray-800 text-white text-sm focus:outline-none focus:border-emerald-500" />
-        </div>
+
         <div>
           <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Pace & Approach</label>
           <div class="px-3.5 py-2.5 rounded-xl bg-gray-950/70 border border-gray-800/80 text-xs text-emerald-300 font-medium">
@@ -1471,6 +1469,7 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
 <div class="mm-plan-top"><span id="plan-day-pill" class="mm-plan-day">—</span><span class="mm-plan-date"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 10h18"/></svg><span id="mm-plan-date">—</span></span></div>
 <h2>Indian Meal Planner</h2><p class="mm-plan-sub">Smart nutrition. Designed around you.</p>
 <div class="mm-plan-targets"><div class="mm-plan-target"><div class="mm-cal-icon"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c-5 0-8-3-8-7 0-4 4-7 5-11 3 2 4 5 4 7 2-1 3-3 3-5 3 3 4 6 4 9 0 4-3 7-8 7z"/></svg></div><span>Daily calorie target</span><div><strong id="mm-plan-cal">—</strong> <small>kcal</small></div></div><div class="mm-plan-target"><div class="mm-pro-icon"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7v10m-4-7v4m14-7v10m4-7v4M7 12h10"/></svg></div><span>Daily protein target</span><div><strong id="mm-plan-pro">—</strong> <small>grams</small></div></div></div>
+<div class="mm-meal-frequency"><label for="mm-meal-count">Meals per day</label><select id="mm-meal-count" onchange="saveMealCountPreference()"><option value="3">3 meals</option><option value="4" selected>4 meals</option><option value="5">5 meals</option><option value="6">6 meals</option></select><p id="mm-meal-count-note">Choose your preferred meal frequency. Daily targets stay the same.</p></div>
 <button id="generate-plan-btn" type="button" onclick="generateDailyPlan()"><svg class="mm-spark" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/></svg><span>Generate Today's Meal Plan</span><svg class="mm-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
 <p class="mm-plan-saved"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11zM8 12l3 3 5-6"/></svg><span>Your daily meal plan is automatically saved on this device.</span></p>
 <div class="mm-plan-info"><div class="mm-plan-info-icon"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v7a3 3 0 0 0 6 0V3M7 3v18M19 3c-4 3-4 8 0 10h2M21 3v18"/></svg></div><div><strong>Personalised for your goals</strong><p>Indian meals, dietary preferences, balanced macros and step-by-step recipes.</p></div></div>
@@ -1708,7 +1707,7 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
         <div class="flex items-center justify-between">
           <div>
             <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Body Composition</span>
-            <h3 class="text-sm font-extrabold text-white">Weight & Waist Check-In</h3>
+            <h3 class="text-sm font-extrabold text-white">Body Progress Check-In</h3>
           </div>
           <span id="body-progress-delta" class="text-xs font-bold text-emerald-400"></span>
         </div>
@@ -1722,6 +1721,9 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
             <input type="text" id="bp-waist" placeholder="e.g. 34 in" class="w-full px-3 py-2 rounded-xl bg-gray-950 border border-gray-800 text-white text-xs font-bold" />
           </div>
         </div>
+        <div><label for="bp-bodyfat" class="block text-[10px] text-gray-400 uppercase mb-1">Body Fat % (optional estimate)</label>
+          <input type="number" id="bp-bodyfat" min="4" max="60" step="0.1" placeholder="e.g. 24.5" class="w-full px-3 py-2 rounded-xl bg-gray-950 border border-gray-800 text-white text-xs font-bold" />
+          <p class="text-xs text-gray-400 mt-1">Track changes over time; not used to calculate calorie or protein goals.</p></div>
         <button type="button" onclick="saveBodyCheckIn()" class="w-full py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-extrabold text-xs transition">
           + Log Check-In for Selected Date
         </button>
@@ -2081,33 +2083,21 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
       return Number.isFinite(n) && n >= 0 ? Math.round(n) : Math.max(0, Math.round(Number(fallback) || 0));
     }
 
-    function normalizeDailyPlan(plan, targets = {}) {
-      const defaults = [
-        { slot: 'Breakfast', title: 'Protein-rich breakfast', indianItems: 'Choose a balanced Indian breakfast with a protein source.' },
-        { slot: 'Lunch', title: 'Balanced Indian lunch', indianItems: 'Include protein, vegetables and a measured portion of rice or roti.' },
-        { slot: 'Snack', title: 'High-protein snack', indianItems: 'Curd, eggs, roasted chana or another suitable protein snack.' },
-        { slot: 'Dinner', title: 'Balanced Indian dinner', indianItems: 'A protein source with vegetables and a measured carbohydrate portion.' }
-      ];
-      const sourceMeals = Array.isArray(plan?.meals) ? plan.meals : [];
-      const totalCalories = safePlanNumber(targets.targetCalories, 1800);
-      const totalProtein = safePlanNumber(targets.proteinGrams, 100);
-      const totalCarbs = safePlanNumber(targets.carbGrams, 200);
-      const totalFats = safePlanNumber(targets.fatGrams, 60);
-      const shares = [0.25, 0.35, 0.12, 0.28];
-      const meals = defaults.map((d, i) => {
-        const raw = sourceMeals[i] || {};
-        return {
-          ...d, ...raw,
-          slot: String(raw.slot || d.slot),
-          title: String(raw.title || d.title),
-          indianItems: String(raw.indianItems || raw.description || d.indianItems),
-          calories: safePlanNumber(raw.calories, totalCalories * shares[i]),
-          protein: safePlanNumber(raw.protein, totalProtein * shares[i]),
-          carbs: safePlanNumber(raw.carbs, totalCarbs * shares[i]),
-          fats: safePlanNumber(raw.fats, totalFats * shares[i])
-        };
+    const mealSlotsByCount = {3:['Breakfast','Lunch','Dinner'],4:['Breakfast','Lunch','Snack','Dinner'],5:['Breakfast','Morning Snack','Lunch','Evening Snack','Dinner'],6:['Breakfast','Morning Snack','Lunch','Afternoon Snack','Dinner','Evening Snack']};
+    const mealSharesByCount = {3:[.30,.37,.33],4:[.25,.35,.12,.28],5:[.24,.10,.30,.10,.26],6:[.22,.10,.28,.10,.22,.08]};
+    function getMealCount() { const v = Number(document.getElementById('mm-meal-count')?.value); return mealSlotsByCount[v] ? v : 4; }
+    function preferredMealCount() { try { const v = Number(localStorage.getItem('mm_meal_count')); return mealSlotsByCount[v] ? v : 4; } catch(e) {return 4;} }
+    window.saveMealCountPreference = function() { try { localStorage.setItem('mm_meal_count', String(getMealCount())); } catch(e) {} updateMealCountNote(); };
+    function updateMealCountNote() { const note = document.getElementById('mm-meal-count-note'); const saved = dailyPlansCache[selectedDateStr]?.meals?.length; if(note) note.textContent = saved && saved !== getMealCount() ? `Saved plan has ${saved} meals. Generate again to change to ${getMealCount()}.` : 'Choose your preferred meal frequency. Daily targets stay the same.'; }
+    function normalizeDailyPlan(plan, targets = {}, requestedCount = null) {
+      const source = Array.isArray(plan?.meals) ? plan.meals : [];
+      const count = mealSlotsByCount[requestedCount] ? requestedCount : mealSlotsByCount[source.length] ? source.length : 4;
+      const slots = mealSlotsByCount[count], shares = mealSharesByCount[count];
+      const meals = slots.map((slot,i) => {
+        const raw = source[i] || {};
+        return {...raw, slot: String(raw.slot || slot), title: String(raw.title || slot), indianItems: String(raw.indianItems || raw.description || 'Choose a suitable protein source and balanced portions.'), calories:safePlanNumber(raw.calories,safePlanNumber(targets.targetCalories,1800)*shares[i]), protein:safePlanNumber(raw.protein,safePlanNumber(targets.proteinGrams,100)*shares[i]), carbs:safePlanNumber(raw.carbs,safePlanNumber(targets.carbGrams,200)*shares[i]), fats:safePlanNumber(raw.fats,safePlanNumber(targets.fatGrams,60)*shares[i])};
       });
-      return { ...(plan && typeof plan === 'object' ? plan : {}), meals, dayFocus: String(plan?.dayFocus || '') };
+      return {...(plan && typeof plan==='object'?plan:{}),mealCount:count,meals,dayFocus:String(plan?.dayFocus||'')};
     }
     let workoutLogDay = 1;
     let workoutLogsByDate = {};
@@ -2556,7 +2546,7 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
       const age = parseFloat(document.getElementById('inp-age').value);
       const height = parseFloat(document.getElementById('inp-height').value);
       const weight = parseFloat(document.getElementById('inp-weight').value);
-      const bodyFat = parseFloat(document.getElementById('inp-bodyfat').value);
+      const bodyFat = userProfile?.bodyFat ?? null;
       const gender = document.getElementById('inp-gender').value;
       const goal = document.getElementById('inp-goal').value;
       const activity = document.getElementById('inp-activity').value;
@@ -2570,7 +2560,7 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
       }
     }
 
-    ['inp-age', 'inp-height', 'inp-weight', 'inp-bodyfat', 'inp-gender', 'inp-goal', 'inp-activity'].forEach(id => {
+    ['inp-age', 'inp-height', 'inp-weight', 'inp-gender', 'inp-goal', 'inp-activity'].forEach(id => {
       document.getElementById(id).addEventListener('input', updateOnboardingLivePreview);
       document.getElementById(id).addEventListener('change', updateOnboardingLivePreview);
     });
@@ -2967,7 +2957,7 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
       const age = parseFloat(document.getElementById('inp-age').value);
       const height = parseFloat(document.getElementById('inp-height').value);
       const weight = parseFloat(document.getElementById('inp-weight').value);
-      const bodyFat = parseFloat(document.getElementById('inp-bodyfat').value);
+      const bodyFat = userProfile?.bodyFat ?? null;
       const goal = document.getElementById('inp-goal').value;
       const activity = document.getElementById('inp-activity').value;
 
@@ -3026,7 +3016,6 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
         document.getElementById('inp-age').value = userProfile.age || '';
         document.getElementById('inp-height').value = userProfile.height || '';
         document.getElementById('inp-weight').value = userProfile.weight || '';
-        document.getElementById('inp-bodyfat').value = userProfile.bodyFat || '';
         document.getElementById('inp-goal').value = userProfile.goal || 'recomp';
         document.getElementById('inp-activity').value = userProfile.activity || '1.55';
         draftSchedule = { ...(userProfile.schedule || draftSchedule) };
@@ -3512,25 +3501,19 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
     window.saveBodyCheckIn = async function() {
       const wVal = parseFloat(document.getElementById('bp-weight')?.value);
       const waistVal = (document.getElementById('bp-waist')?.value || '').trim();
-      if (!wVal && !waistVal) {
-        showToast('Enter weight or waist measurement first.', 'info');
-        return;
-      }
-      bodyProgressLogs[selectedDateStr] = {
-        weight: !isNaN(wVal) && wVal > 0 ? wVal : userProfile.weight,
-        waist: waistVal
-      };
-      if (!isNaN(wVal) && wVal > 0 && userProfile) {
-        userProfile.weight = wVal;
-        userProfile.metrics = calculateMetrics({
-          age: userProfile.age,
-          gender: userProfile.gender,
-          height: userProfile.height,
-          weight: wVal,
-          bodyFat: userProfile.bodyFat,
-          goal: userProfile.goal,
-          activity: userProfile.activity
-        });
+      const bfRaw = document.getElementById('bp-bodyfat').value.trim();
+      const bf = bfRaw === '' ? null : Number(bfRaw);
+      if (bf !== null && (!Number.isFinite(bf) || bf < 4 || bf > 60)) { showToast('Enter body fat between 4 and 60%.', 'info'); return; }
+      if (!wVal && !waistVal && bf === null) { showToast('Enter at least one measurement.', 'info'); return; }
+      const previous = bodyProgressLogs[selectedDateStr] || {};
+      bodyProgressLogs[selectedDateStr] = { ...previous };
+      if (Number.isFinite(wVal) && wVal > 0) bodyProgressLogs[selectedDateStr].weight = wVal;
+      if (waistVal) bodyProgressLogs[selectedDateStr].waist = waistVal;
+      if (bf !== null) bodyProgressLogs[selectedDateStr].bodyFat = bf;
+      if (userProfile) {
+        if (bf !== null) userProfile.bodyFat = bf;
+        if (Number.isFinite(wVal) && wVal > 0) userProfile.weight = wVal;
+        userProfile.metrics = calculateMetrics({ ...userProfile });
       }
       await persistProfileExtrasToCloud();
       renderBodyProgressHistory();
@@ -3544,6 +3527,8 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
       const histEl = document.getElementById('body-progress-history');
       const deltaEl = document.getElementById('body-progress-delta');
       if (!histEl) return;
+      const bfInput = document.getElementById('bp-bodyfat');
+      if (bfInput) bfInput.placeholder = userProfile?.bodyFat != null ? `Last estimate: ${userProfile.bodyFat}%` : 'e.g. 24.5';
       const dates = Object.keys(bodyProgressLogs).sort();
       if (!dates.length) {
         histEl.innerHTML = `<div class="text-[11px] text-gray-500">No check-ins logged yet.</div>`;
@@ -3564,7 +3549,7 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
         return `
           <div class="flex items-center justify-between text-[11px] bg-gray-950 border border-gray-800/80 rounded-xl px-3 py-1.5">
             <span class="text-gray-400 font-semibold">${d}</span>
-            <span class="font-bold text-white">${entry.weight ? `${entry.weight} kg` : ''}${entry.weight && entry.waist ? ' • ' : ''}${entry.waist ? escapeHtml(entry.waist) : ''}</span>
+            <span class="font-bold text-white">${entry.weight ? `${entry.weight} kg` : ''}${entry.weight && entry.waist ? ' • ' : ''}${entry.waist ? escapeHtml(entry.waist) : ''}${entry.bodyFat != null ? `${entry.weight || entry.waist ? ' • ' : ''}${escapeHtml(String(entry.bodyFat))}% BF` : ''}</span>
           </div>
         `;
       }).join('');
@@ -5040,224 +5025,24 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
       if (dayPill) dayPill.textContent = `${dayName} • ${getDietLabel(dietCode)}`;
       if (dayPill) dayPill.dataset.diet = dietCode;
 
+      const countSelect = document.getElementById('mm-meal-count');
+      if (countSelect) countSelect.value = String(dailyPlansCache[selectedDateStr]?.meals?.length || preferredMealCount());
       if (dailyPlansCache[selectedDateStr]) {
         dailyPlansCache[selectedDateStr] = normalizeDailyPlan(dailyPlansCache[selectedDateStr], m);
         renderGeneratedPlan(dailyPlansCache[selectedDateStr]);
-      }
+      } else { document.getElementById('plan-results-container').innerHTML = ''; }
+      updateMealCountNote();
     }
 
-    function buildSmartFallbackPlan({ dietCode, targetCalories, proteinGrams, carbGrams, fatGrams, dayName }) {
-      const bCal = Math.round(targetCalories * 0.25);
-      const lCal = Math.round(targetCalories * 0.35);
-      const sCal = Math.round(targetCalories * 0.12);
-      const dCal = Math.max(250, targetCalories - bCal - lCal - sCal);
-
-      const bPro = Math.round(proteinGrams * 0.25);
-      const lPro = Math.round(proteinGrams * 0.32);
-      const sPro = Math.round(proteinGrams * 0.18);
-      const dPro = Math.max(15, proteinGrams - bPro - lPro - sPro);
-
-      const meals = dietCode === 'veg' ? [
-        {
-          slot: 'Breakfast',
-          title: 'High-Protein Moong Dal Chilla & Curd',
-          indianItems: '3 Moong Dal Chillas (stuffed with grated paneer/ veggies) + 150g low-fat curd',
-          calories: bCal,
-          protein: bPro,
-          carbs: Math.round(carbGrams * 0.26),
-          fats: Math.round(fatGrams * 0.24)
-        },
-        {
-          slot: 'Lunch',
-          title: 'Soya Chunk Curry, Dal & Phulka Roti',
-          indianItems: '2 Phulka Rotis + 1 bowl Soya Bhurji/Curry + 1 bowl Dal + kachumber salad',
-          calories: lCal,
-          protein: lPro,
-          carbs: Math.round(carbGrams * 0.38),
-          fats: Math.round(fatGrams * 0.32)
-        },
-        {
-          slot: 'Snack',
-          title: 'Roasted Chana / Greek Yogurt Bowl',
-          indianItems: '1 bowl hung curd/Greek yogurt or roasted chana + black coffee/green tea',
-          calories: sCal,
-          protein: sPro,
-          carbs: Math.round(carbGrams * 0.10),
-          fats: Math.round(fatGrams * 0.12)
-        },
-        {
-          slot: 'Dinner',
-          title: 'Paneer Tikka / Bhurji & Stir-Fried Sabzi',
-          indianItems: '150g Paneer Bhurji/Tikka + sautéed bhindi/palak + 1-2 rotis',
-          calories: dCal,
-          protein: dPro,
-          carbs: Math.round(carbGrams * 0.26),
-          fats: Math.round(fatGrams * 0.32)
-        }
-      ] : dietCode === 'egg' ? [
-        {
-          slot: 'Breakfast',
-          title: 'Masala Egg Omelette & Whole Wheat Toast',
-          indianItems: '3-4 eggs (2 whole + 2 whites) masala omelette + 2 multigrain toast/roti',
-          calories: bCal,
-          protein: bPro,
-          carbs: Math.round(carbGrams * 0.25),
-          fats: Math.round(fatGrams * 0.25)
-        },
-        {
-          slot: 'Lunch',
-          title: 'Paneer/Dal Bowl & Roti',
-          indianItems: '2 Rotis + 1 bowl Dal + 100g Paneer/Tofu + cucumber salad',
-          calories: lCal,
-          protein: lPro,
-          carbs: Math.round(carbGrams * 0.38),
-          fats: Math.round(fatGrams * 0.30)
-        },
-        {
-          slot: 'Snack',
-          title: 'Boiled Eggs / Yogurt Snack',
-          indianItems: '2 boiled eggs or 1 cup high-protein curd + fruit',
-          calories: sCal,
-          protein: sPro,
-          carbs: Math.round(carbGrams * 0.12),
-          fats: Math.round(fatGrams * 0.13)
-        },
-        {
-          slot: 'Dinner',
-          title: 'Egg Bhurji / Sabzi & Rice/Roti',
-          indianItems: '2-3 eggs bhurji with veggies + 1-2 rotis or steamed rice',
-          calories: dCal,
-          protein: dPro,
-          carbs: Math.round(carbGrams * 0.25),
-          fats: Math.round(fatGrams * 0.32)
-        }
-      ] : [
-        {
-          slot: 'Breakfast',
-          title: 'Egg White & Whole Egg Bhurji + Roti',
-          indianItems: '4 eggs (2 whole + 2 whites) bhurji + 2 Phulka Rotis',
-          calories: bCal,
-          protein: bPro,
-          carbs: Math.round(carbGrams * 0.25),
-          fats: Math.round(fatGrams * 0.24)
-        },
-        {
-          slot: 'Lunch',
-          title: 'Chicken / Fish Curry, Rice/Roti & Dal',
-          indianItems: '150g lean chicken/fish curry + 1 cup rice or 2 rotis + salad',
-          calories: lCal,
-          protein: lPro,
-          carbs: Math.round(carbGrams * 0.38),
-          fats: Math.round(fatGrams * 0.30)
-        },
-        {
-          slot: 'Snack',
-          title: 'High-Protein Snack',
-          indianItems: '1 scoop whey protein or roasted chana + 150g curd',
-          calories: sCal,
-          protein: sPro,
-          carbs: Math.round(carbGrams * 0.10),
-          fats: Math.round(fatGrams * 0.12)
-        },
-        {
-          slot: 'Dinner',
-          title: 'Grilled Chicken / Paneer & Sautéed Veggies',
-          indianItems: '150g grilled chicken breast/tikka + sautéed greens + 1 roti',
-          calories: dCal,
-          protein: dPro,
-          carbs: Math.round(carbGrams * 0.27),
-          fats: Math.round(fatGrams * 0.34)
-        }
-      ];
-
-      const weeklySplit = [
-        {
-          dayNumber: 1,
-          splitTitle: 'Day 1: Chest & Triceps + Core & Cardio',
-          duration: '55 min',
-          muscleExercises: [
-            { name: 'Incline Dumbbell Press', muscleGroup: 'Chest', setsReps: '3 x 10-12', tip: 'Keep shoulder blades retracted and lower dumbbells under control.' },
-            { name: 'Flat Bench / Machine Chest Press', muscleGroup: 'Chest', setsReps: '3 x 10-12', tip: 'Stop just before full elbow lockout to keep tension on pecs.' },
-            { name: 'Cable / Pec Deck Fly', muscleGroup: 'Chest', setsReps: '3 x 12-15', tip: 'Squeeze chest for 1 second at peak contraction.' },
-            { name: 'Tricep Rope Pushdowns', muscleGroup: 'Triceps', setsReps: '3 x 12-15', tip: 'Pin elbows to ribs and flare rope ends at bottom.' }
-          ],
-          coreExercises: [
-            { name: 'Hanging / Lying Leg Raises', setsReps: '3 x 15' },
-            { name: 'Plank Hold', setsReps: '3 x 45-60s' }
-          ],
-          cardioBlock: { protocol: 'Incline Treadmill Walk (6% incline, 4.5-5 km/h)', duration: '20 min', targetCalories: '~160 kcal' }
-        },
-        {
-          dayNumber: 2,
-          splitTitle: 'Day 2: Back & Biceps + Core & Cardio',
-          duration: '55 min',
-          muscleExercises: [
-            { name: 'Wide-Grip Lat Pulldowns', muscleGroup: 'Back', setsReps: '3 x 10-12', tip: 'Pull bar toward upper chest without swinging torso.' },
-            { name: 'Seated Cable / Chest-Supported Row', muscleGroup: 'Back', setsReps: '3 x 10-12', tip: 'Drive elbows back and pause briefly on each rep.' },
-            { name: 'Single-Arm Dumbbell Row', muscleGroup: 'Back', setsReps: '3 x 10/side', tip: 'Keep back flat and pull toward hip pocket.' },
-            { name: 'Incline Dumbbell / EZ-Bar Curl', muscleGroup: 'Biceps', setsReps: '3 x 10-12', tip: 'Avoid swinging momentum on the way up.' }
-          ],
-          coreExercises: [
-            { name: 'Cable Crunches', setsReps: '3 x 15' },
-            { name: 'Russian Twists', setsReps: '3 x 20' }
-          ],
-          cardioBlock: { protocol: 'Stationary Cycling (Moderate steady pace)', duration: '20 min', targetCalories: '~150 kcal' }
-        },
-        {
-          dayNumber: 3,
-          splitTitle: 'Day 3: Legs (Quads, Hamstrings, Glutes & Calves) + Core & Cardio',
-          duration: '60 min',
-          muscleExercises: [
-            { name: 'Barbell Squat / Leg Press', muscleGroup: 'Legs', setsReps: '3 x 10-12', tip: 'Keep heels planted and knees tracking over toes.' },
-            { name: 'Romanian Deadlift (RDL)', muscleGroup: 'Legs', setsReps: '3 x 10-12', tip: 'Push hips back until hamstring stretch, then drive hips forward.' },
-            { name: 'Seated / Lying Leg Curl', muscleGroup: 'Legs', setsReps: '3 x 12-15', tip: 'Control the eccentric return.' },
-            { name: 'Standing / Seated Calf Raises', muscleGroup: 'Legs', setsReps: '3 x 15', tip: 'Full stretch at bottom and pause at top.' }
-          ],
-          coreExercises: [
-            { name: 'Ab Wheel / Mountain Climbers', setsReps: '3 x 12-20' },
-            { name: 'Side Plank', setsReps: '2 x 30s/side' }
-          ],
-          cardioBlock: { protocol: 'Brisk Treadmill Walk', duration: '15 min', targetCalories: '~110 kcal' }
-        },
-        {
-          dayNumber: 4,
-          splitTitle: 'Day 4: Shoulders & Traps + Core & Cardio',
-          duration: '50 min',
-          muscleExercises: [
-            { name: 'Seated Dumbbell Overhead Press', muscleGroup: 'Shoulders', setsReps: '3 x 8-12', tip: 'Brace core and press cleanly overhead.' },
-            { name: 'Cable / Dumbbell Lateral Raises', muscleGroup: 'Shoulders', setsReps: '4 x 15-20', tip: 'Lead with elbows for side-delt width.' },
-            { name: 'Reverse Pec Deck / Rear Delt Fly', muscleGroup: 'Shoulders', setsReps: '3 x 15', tip: 'Focus on rear delts rather than upper traps.' },
-            { name: 'Dumbbell / Barbell Shrugs', muscleGroup: 'Shoulders', setsReps: '3 x 12-15', tip: 'Shrug straight up toward ears without rolling shoulders.' }
-          ],
-          coreExercises: [
-            { name: 'Lying Leg Raises', setsReps: '3 x 15' },
-            { name: 'Hollow Body / Plank Hold', setsReps: '3 x 45s' }
-          ],
-          cardioBlock: { protocol: 'Incline Walk or Elliptical', duration: '20 min', targetCalories: '~165 kcal' }
-        },
-        {
-          dayNumber: 5,
-          splitTitle: 'Day 5: Upper Body Balance & Arms + Core & Cardio',
-          duration: '55 min',
-          muscleExercises: [
-            { name: 'Dumbbell Bench or Incline Press', muscleGroup: 'Chest', setsReps: '3 x 10-12', tip: 'Smooth controlled tempo for volume.' },
-            { name: 'Cable Row or Pull-Ups', muscleGroup: 'Back', setsReps: '3 x 10-12', tip: 'Focus on upper back thickness.' },
-            { name: 'Hammer Curls', muscleGroup: 'Biceps', setsReps: '3 x 12', tip: 'Targets brachialis and forearm thickness.' },
-            { name: 'Overhead Tricep Extension', muscleGroup: 'Triceps', setsReps: '3 x 12', tip: 'Keep elbows tucked and stretch long head.' }
-          ],
-          coreExercises: [
-            { name: 'Cable Crunches', setsReps: '3 x 15' },
-            { name: 'Plank Hold', setsReps: '3 x 60s' }
-          ],
-          cardioBlock: { protocol: 'Low-Impact Cardio Intervals', duration: '20 min', targetCalories: '~170 kcal' }
-        }
-      ];
-
-      return {
-        dayFocus: `${dayName} (${getDietLabel(dietCode)}): Aim for ~${proteinGrams}g protein across meals and measure cooking oil and portions.`,
-        meals,
-        weeklySplit
-      };
+    function buildSmartFallbackPlan({dietCode,targetCalories,proteinGrams,carbGrams,fatGrams,dayName,mealCount=4}) {
+      const slots=mealSlotsByCount[mealCount], shares=mealSharesByCount[mealCount];
+      const main = {Breakfast:['Moong dal chilla & curd','Moong dal chilla with paneer or tofu and plain curd'],Lunch:[dietCode==='nonveg'?'Chicken curry, dal & roti':'Soya curry, dal & roti',dietCode==='nonveg'?'Lean chicken curry, dal, roti and salad':'Soya chunks, dal, roti and salad'],Dinner:[dietCode==='egg'?'Egg bhurji & sabzi':dietCode==='nonveg'?'Fish tikka & rice':'Tofu bhurji & sabzi',dietCode==='egg'?'Egg bhurji, vegetables and roti':dietCode==='nonveg'?'Fish tikka, rice and vegetables':'Tofu or paneer, vegetables and roti']};
+      const snacks=[['Curd & fruit','Plain high-protein curd and seasonal fruit'],['Roasted chana & milk','Roasted chana with milk or unsweetened soy milk'],['Sprout chaat','Cooked moong sprouts with cucumber and lemon']];
+      const totals=[targetCalories,proteinGrams,carbGrams,fatGrams].map(x=>safePlanNumber(x));
+      const allocations=totals.map(t=>{let remaining=t; return shares.map((v,i)=>{const n=i===shares.length-1?remaining:Math.min(remaining,Math.round(t*v));remaining-=n;return n;});});
+      let snackIdx=0;
+      const meals=slots.map((slot,i)=>{const [title,food]=main[slot]||snacks[snackIdx++ % snacks.length];return {slot,title,indianItems:food+'. Adjust serving size to the suggested meal targets (estimates).',calories:allocations[0][i],protein:allocations[1][i],carbs:allocations[2][i],fats:allocations[3][i]};});
+      return {mealCount,meals,dayFocus:`${dayName}: ${getDietLabel(dietCode)}. Suggested meal targets are estimates; adjust portions to meet your daily goals.`};
     }
 
     const DAILY_PLAN_SCHEMA = {
@@ -5288,9 +5073,11 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
       btn.disabled = true;
       btn.innerHTML = `<span class="mm-plan-spinner" aria-hidden="true"></span><span>Building Today's Meal Plan...</span>`;
 
-      const dObj = parseYMD(selectedDateStr);
+      const planDate = selectedDateStr;
+      const mealCount = getMealCount();
+      const dObj = parseYMD(planDate);
       const dayName = DAYS_FULL[dObj.getDay()];
-      const dietCode = getDayDietType(selectedDateStr);
+      const dietCode = getDayDietType(planDate);
       const m = userProfile.metrics;
 
       const dietRule = dietCode === 'veg'
@@ -5299,16 +5086,18 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
         ? 'EGGETARIAN (Vegetarian + Eggs allowed, NO chicken/mutton/fish).'
         : 'NON-VEGETARIAN ALLOWED (Include lean Indian non-veg like chicken breast, egg whites, fish tikka alongside roti/rice/dal).';
 
-      const prompt = `Create a practical, delicious 1-day Indian meal plan (4 meals: Breakfast, Lunch, Evening Snack, Dinner) for ${userProfile.name} (${userProfile.age}yo ${userProfile.gender}, ${userProfile.height}cm, ${userProfile.weight}kg, BMI ${m.bmi}, Goal: ${userProfile.goal}).
+      const prompt = `Create a practical, delicious 1-day Indian meal plan (exactly ${mealCount} meals: ${mealSlotsByCount[mealCount].join(', ')}) for ${userProfile.name} (${userProfile.age}yo ${userProfile.gender}, ${userProfile.height}cm, ${userProfile.weight}kg, BMI ${m.bmi}, Goal: ${userProfile.goal}).
 Today is ${dayName}. Dietary Rule for today: ${dietRule}
-Total daily macros across the 4 meals should closely match: ~${m.targetCalories} kcal, ~${m.proteinGrams}g protein, ~${m.carbGrams}g carbs and ~${m.fatGrams}g fat.
+Total daily macros across the ${mealCount} meals should closely match: ~${m.targetCalories} kcal, ~${m.proteinGrams}g protein, ~${m.carbGrams}g carbs and ~${m.fatGrams}g fat.
 For each meal, provide a realistic meal title, Indian ingredients/food description, and estimated calories, protein, carbs and fats. Use practical Indian household portions and distribute protein across the day. Do not include workout plans or workout splits.`;
 
       try {
         const plan = await callGeminiJson([{ text: prompt }], DAILY_PLAN_SCHEMA);
-        dailyPlansCache[selectedDateStr] = normalizeDailyPlan(plan, m);
+        if (!Array.isArray(plan?.meals) || plan.meals.length !== mealCount) throw new Error('Unexpected meal count');
+        plan.meals = plan.meals.map((meal,i)=>({...meal,slot:mealSlotsByCount[mealCount][i]}));
+        dailyPlansCache[planDate] = normalizeDailyPlan(plan, m, mealCount);
         persistDailyPlans();
-        renderGeneratedPlan(dailyPlansCache[selectedDateStr]);
+        if (selectedDateStr === planDate) { renderGeneratedPlan(dailyPlansCache[planDate]); updateMealCountNote(); }
         showToast('Today’s Indian meal plan is ready!', 'success');
       } catch (err) {
         const fallbackPlan = buildSmartFallbackPlan({
@@ -5317,11 +5106,11 @@ For each meal, provide a realistic meal title, Indian ingredients/food descripti
           proteinGrams: m.proteinGrams,
           carbGrams: m.carbGrams,
           fatGrams: m.fatGrams,
-          dayName
+          dayName, mealCount
         });
-        dailyPlansCache[selectedDateStr] = normalizeDailyPlan(fallbackPlan, m);
+        dailyPlansCache[planDate] = normalizeDailyPlan(fallbackPlan, m, mealCount);
         persistDailyPlans();
-        renderGeneratedPlan(dailyPlansCache[selectedDateStr]);
+        if (selectedDateStr === planDate) { renderGeneratedPlan(dailyPlansCache[planDate]); updateMealCountNote(); }
         showToast('Generated today’s meal suggestions with Smart Coach!', 'success');
       } finally {
         btn.disabled = false;
@@ -5361,7 +5150,7 @@ For each meal, provide a realistic meal title, Indian ingredients/food descripti
           </div>
         ` : ''}
         <div class="space-y-2.5">
-          <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-400 px-1">Today's Indian Meals</h3>
+          <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-400 px-1">Today's Indian Meals · ${plan.meals.length} meals</h3>
           ${mealsHtml}
         </div>
       `;
@@ -5405,9 +5194,9 @@ For each meal, provide a realistic meal title, Indian ingredients/food descripti
       const plan = dailyPlansCache[selectedDateStr];
       const meal = plan?.meals?.[mealIdx];
       if (!meal) return;
-      const slot = meal.slot || selectedMealSlot;
+      const slot = /snack/i.test(meal.slot || '') ? 'Snack' : (meal.slot || selectedMealSlot);
       await addMealEntry({
-        name: formatMealNameWithSlot(`${meal.title} (${meal.indianItems})`, slot),
+        name: formatMealNameWithSlot(`${meal.slot && meal.slot !== slot ? meal.slot + ' – ' : ''}${meal.title} (${meal.indianItems})`, slot),
         mealSlot: slot,
         calories: meal.calories,
         protein: meal.protein,
