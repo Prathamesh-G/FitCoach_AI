@@ -514,95 +514,45 @@ html[data-theme="light"] #app-shell .mm-credit p:last-child {color:#172b24 !impo
 @media(max-width:640px) {#app-shell {padding-bottom:calc(8rem + env(safe-area-inset-bottom, 0px));} #app-shell .mm-credit .mm-credit-accent {display:block;}}
 </style>
 
-  <style id="mettlemap-meal-plan-cta-fix">
-    /* Meal plan CTA: force readable contrast and a raised pill button in all themes */
-    #generate-plan-btn {
-      position: relative;
-      isolation: isolate;
-      overflow: hidden;
-      min-height: 58px;
-      border-radius: 9999px !important;
-      padding: 0.95rem 1.35rem !important;
-      border: 1px solid rgba(255,255,255,0.12) !important;
-      background: linear-gradient(180deg, #ffd27a 0%, #ffb547 48%, #f78d1e 100%) !important;
-      color: #17211d !important;
-      font-weight: 800 !important;
-      letter-spacing: 0.01em;
-      box-shadow:
-        0 14px 26px rgba(245, 143, 28, 0.28),
-        0 7px 0 rgba(146, 78, 6, 0.95),
-        inset 0 1px 0 rgba(255,255,255,0.75),
-        inset 0 -10px 18px rgba(168, 81, 0, 0.16) !important;
-      transform: translateY(0);
-      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
-    }
-    #generate-plan-btn::before {
-      content: "";
-      position: absolute;
-      inset: 1px 1px auto 1px;
-      height: 52%;
-      border-radius: 9999px;
-      background: linear-gradient(180deg, rgba(255,255,255,.52), rgba(255,255,255,.12));
-      pointer-events: none;
-      z-index: 0;
-    }
-    #generate-plan-btn::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18);
-      pointer-events: none;
-      z-index: 0;
-    }
-    #generate-plan-btn > span, #generate-plan-btn > svg {
-      position: relative;
-      z-index: 1;
-      color: inherit !important;
-      text-shadow: 0 1px 0 rgba(255,255,255,0.18);
-    }
-    #generate-plan-btn:hover {
-      filter: brightness(1.04);
-      transform: translateY(-1px);
-      box-shadow:
-        0 16px 28px rgba(245, 143, 28, 0.34),
-        0 8px 0 rgba(146, 78, 6, 0.95),
-        inset 0 1px 0 rgba(255,255,255,0.78),
-        inset 0 -10px 18px rgba(168, 81, 0, 0.18) !important;
-    }
-    #generate-plan-btn:active {
-      transform: translateY(4px);
-      box-shadow:
-        0 8px 18px rgba(245, 143, 28, 0.24),
-        0 3px 0 rgba(146, 78, 6, 0.95),
-        inset 0 1px 0 rgba(255,255,255,0.65),
-        inset 0 -8px 16px rgba(168, 81, 0, 0.18) !important;
-    }
-    html[data-theme="dark"] #generate-plan-btn {
-      border-color: rgba(255, 220, 150, 0.28) !important;
-      box-shadow:
-        0 16px 28px rgba(245, 143, 28, 0.26),
-        0 7px 0 rgba(108, 57, 2, 0.98),
-        inset 0 1px 0 rgba(255,255,255,0.72),
-        inset 0 -10px 18px rgba(118, 53, 0, 0.24) !important;
-    }
-    html[data-theme="light"] #generate-plan-btn {
-      border-color: rgba(203, 103, 0, 0.22) !important;
-      box-shadow:
-        0 14px 24px rgba(245, 143, 28, 0.18),
-        0 7px 0 rgba(156, 90, 11, 0.82),
-        inset 0 1px 0 rgba(255,255,255,0.82),
-        inset 0 -10px 18px rgba(168, 81, 0, 0.14) !important;
-    }
-    @media (max-width: 480px) {
-      #generate-plan-btn {
-        min-height: 54px;
-        padding: 0.9rem 1.1rem !important;
-        font-size: 0.95rem !important;
-      }
-    }
-  </style>
+  
 
+<style id="mm-approved-plan-design">
+#app-shell #tab-plan .mm-plan-card{--mp-bg:#090e17;--mp-tile:#141f2a;--mp-ink:#f1f5f9;--mp-muted:#a3b2c3;--mp-accent:#6ee7b7;--mp-badge:#102d26;--mp-border:#263341;background:var(--mp-bg);color:var(--mp-ink);border:1px solid var(--mp-border);border-radius:24px;padding:clamp(16px,3vw,28px);display:grid;gap:16px;}
+html[data-theme="light"] #app-shell #tab-plan .mm-plan-card{--mp-bg:#f1f6f3;--mp-tile:#fff;--mp-ink:#15382b;--mp-muted:#52685c;--mp-accent:#087447;--mp-badge:#d9f3e5;--mp-border:#d9e5de;}
+.mm-plan-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.mm-plan-day{background:var(--mp-badge);color:var(--mp-accent);border-radius:999px;padding:7px 12px;font-weight:750;font-size:12px;text-transform:uppercase}.mm-plan-date{display:flex;align-items:center;gap:6px;color:var(--mp-muted);font-size:12px}.mm-plan-date svg{width:17px;height:17px}
+#app-shell #tab-plan .mm-plan-card h2{color:var(--mp-ink)!important;font-size:clamp(22px,4vw,30px);font-weight:800;line-height:1.2;margin:0}.mm-plan-sub{color:var(--mp-muted);font-size:14px;margin-top:-10px}.mm-plan-targets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.mm-plan-target{background:var(--mp-tile);border:1px solid var(--mp-border);border-radius:16px;padding:14px;display:grid;gap:8px;min-width:0}.mm-plan-target>span,.mm-plan-target small{color:var(--mp-muted);font-size:12px}.mm-plan-target strong{font-size:clamp(22px,4vw,30px);color:var(--mp-ink);font-weight:800}.mm-cal-icon{color:#d97706}.mm-pro-icon{color:var(--mp-accent)}
+#app-shell #tab-plan #generate-plan-btn{appearance:none;position:relative;width:100%;min-height:54px;border-radius:999px!important;display:flex;align-items:center;justify-content:center;gap:10px;padding:14px 38px;background-color:#10b981!important;background-image:linear-gradient(100deg,#10b981,#a3e635)!important;border:0!important;color:#092c20!important;box-shadow:0 4px 10px rgba(16,185,129,.16)!important;font-size:clamp(13px,2.5vw,16px);font-weight:800;line-height:1.35;cursor:pointer;transition:filter .15s,transform .15s;}
+#app-shell #tab-plan #generate-plan-btn span{color:#092c20!important;text-align:center}#app-shell #tab-plan #generate-plan-btn svg{color:#092c20!important;width:20px;height:20px;}#app-shell #tab-plan #generate-plan-btn .mm-chevron{position:absolute;right:14px;width:17px;height:17px}#app-shell #tab-plan #generate-plan-btn:active{transform:scale(.985)}#app-shell #tab-plan #generate-plan-btn:disabled{opacity:.75;cursor:wait}#app-shell #tab-plan #generate-plan-btn:hover:not(:disabled){filter:brightness(1.04)}.mm-plan-spinner{width:17px;height:17px;border:2px solid #092c20;border-top-color:transparent;border-radius:50%;animation:mm-plan-spin .75s linear infinite;flex-shrink:0}@keyframes mm-plan-spin{to{transform:rotate(360deg)}}
+.mm-plan-saved{display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;font-size:12px;color:var(--mp-muted)}.mm-plan-saved svg{color:var(--mp-accent);width:17px;height:17px}.mm-plan-info{display:flex;align-items:center;gap:12px;border-top:1px solid var(--mp-border);padding-top:16px}.mm-plan-info-icon{display:grid;place-items:center;background:var(--mp-badge);color:var(--mp-accent);border-radius:12px;min-width:44px;height:44px}.mm-plan-info strong{color:var(--mp-ink);font-size:14px}.mm-plan-info p{color:var(--mp-muted);font-size:12px;margin-top:3px;line-height:1.5}
+@media(max-width:360px){.mm-plan-target{padding:10px}.mm-plan-targets{gap:8px}#app-shell #tab-plan #generate-plan-btn{padding:12px 26px;gap:6px}}
+</style>
+<style id="mm-unified-premium">
+/* Unified visual system. Scoped to app content; header and splash remain unchanged. */
+#app-shell {--mm-surface:#141f2b;--mm-inset:#0e1721;--mm-edge:#293b48;--mm-ink:#f1f5f9;--mm-muted:#a4b5c3;--mm-accent:#6ee7b7;--mm-soft:#12372e;--mm-depth:0 3px 0 #080e15,0 7px 18px #0003;--mm-nav:#101b25;}
+html[data-theme="light"] #app-shell {--mm-surface:#fff;--mm-inset:#edf4ef;--mm-edge:#d6e4db;--mm-ink:#15382b;--mm-muted:#52685c;--mm-accent:#087447;--mm-soft:#dff5e8;--mm-depth:0 3px 0 #dce8e0,0 7px 18px #183e2910;--mm-nav:#fff;}
+#app-shell main {padding-bottom:18px;--mm-card-border:var(--mm-edge);}
+#app-shell main :is(section,div,article)[class~="border"]:is([class~="rounded-3xl"],[class~="rounded-2xl"]):not(.mm-plan-card):not([class~="hidden"]) {background:var(--mm-surface)!important;border-color:var(--mm-edge)!important;border-radius:22px!important;box-shadow:var(--mm-depth)!important;}
+#app-shell main .mm-plan-card {box-shadow:var(--mm-depth)!important;}
+#app-shell main .mm-plan-target {box-shadow:0 2px 0 var(--mm-edge);}
+#app-shell main :is(h2,h3) {letter-spacing:-.025em;line-height:1.25;}
+#app-shell main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),select,textarea) {border-radius:12px!important;}
+#app-shell main button {transition:transform .14s ease,filter .14s ease,box-shadow .14s ease,border-color .14s ease;}
+#app-shell main button:active:not(:disabled) {transform:translateY(2px) scale(.985);}
+#app-shell main button:is([class~="bg-emerald-500"],[class~="bg-teal-500"],[class~="bg-amber-500"],[class~="bg-orange-500"]):not(.theme-choice):not(.feedback-choice):not(.mult-btn):not([id^="log-mode-"]):not([id^="wh-range-"]):not([id^="slot-btn-"]):not(:disabled) {background-color:#10b981!important;background-image:linear-gradient(100deg,#10b981,#a3e635)!important;color:#092c20!important;border:1px solid #10b98144!important;border-radius:999px!important;box-shadow:0 3px 0 #08744766,0 5px 12px #10b98120!important;}
+#app-shell main button:is([class~="bg-emerald-500"],[class~="bg-teal-500"],[class~="bg-amber-500"],[class~="bg-orange-500"]):disabled {opacity:.55;cursor:not-allowed;}
+#app-shell main button:is([class~="bg-emerald-500"],[class~="bg-teal-500"],[class~="bg-amber-500"],[class~="bg-orange-500"]):not(:disabled):hover {filter:brightness(1.04);}
+#app-shell main button[class~="rounded-2xl"][class~="border"] {border-radius:18px!important;}
+#app-shell main button:focus-visible {outline:2px solid var(--mm-accent);outline-offset:3px;}
+#app-shell nav.fixed.bottom-0 {background:var(--mm-nav)!important;border-color:var(--mm-edge)!important;box-shadow:0 -4px 18px #00000012;}
+#app-shell nav .nav-btn {border-radius:13px;margin:3px 2px;min-width:0;gap:3px;}
+#app-shell nav .nav-btn.text-emerald-400 {background:var(--mm-soft)!important;color:var(--mm-accent)!important;}
+#app-shell nav .nav-btn.text-gray-500 {color:var(--mm-muted)!important;}
+#app-shell nav .nav-btn svg {width:21px;height:21px;}
+#app-shell main .mm-guide-hero {border:1px solid var(--mm-edge);box-shadow:var(--mm-depth)!important;}
+@media(max-width:480px){#app-shell main :is(section,div,article)[class~="border"]:is([class~="rounded-3xl"],[class~="rounded-2xl"]):not(.mm-plan-card){border-radius:19px!important;}#app-shell nav .nav-btn{margin:2px 0;}}
+@media(prefers-reduced-motion:reduce){#app-shell main button{transition:none!important;}#app-shell main button:active:not(:disabled){transform:none!important;}}
+html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[class~="bg-teal-500"],[class~="bg-amber-500"],[class~="bg-orange-500"]):not(.theme-choice):not(.feedback-choice):not(.mult-btn):not([id^="log-mode-"]):not([id^="wh-range-"]):not([id^="slot-btn-"]):not(:disabled){background-color:#10b981!important;background-image:linear-gradient(100deg,#10b981,#a3e635)!important;color:#092c20!important;}
+</style>
 </head>
 <body class="min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
 
@@ -1517,21 +1467,14 @@ html[data-theme="light"] #app-shell .mm-credit p:last-child {color:#172b24 !impo
 
     <!-- TAB 3: DAY-AWARE INDIAN MEAL & WORKOUT PLANNER -->
     <main id="tab-plan" class="hidden p-4 space-y-4">
-      <div class="bg-gradient-to-br from-gray-900 to-gray-950 border border-gray-800 rounded-3xl p-5">
-        <div class="flex items-center justify-between mb-2">
-          <span id="plan-day-pill" class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-            Wednesday • Non-Veg Day
-          </span>
-          <span id="plan-target-pill" class="text-xs font-semibold text-gray-400">1850 kcal • 135g P</span>
-        </div>
-        <h2 class="text-lg font-extrabold text-white">Indian Meal Planner</h2>
-        <p class="text-xs text-gray-400 mt-1 mb-3">Generates meals based on the selected day of the week and your dietary preference, with recipes for every suggested meal.</p>
-
-        <button id="generate-plan-btn" type="button" onclick="generateDailyPlan()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-gray-950 font-extrabold text-sm shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2">
-          <span>✨ Generate Today's Meal Plan</span>
-        </button>
-        <p class="text-[10px] text-gray-500 text-center mt-2">Saved on this device for the selected date. Reopen the app to continue using today's plan; regenerate only when you want a fresh one.</p>
-      </div>
+      <section class="mm-plan-card">
+<div class="mm-plan-top"><span id="plan-day-pill" class="mm-plan-day">—</span><span class="mm-plan-date"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 10h18"/></svg><span id="mm-plan-date">—</span></span></div>
+<h2>Indian Meal Planner</h2><p class="mm-plan-sub">Smart nutrition. Designed around you.</p>
+<div class="mm-plan-targets"><div class="mm-plan-target"><div class="mm-cal-icon"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c-5 0-8-3-8-7 0-4 4-7 5-11 3 2 4 5 4 7 2-1 3-3 3-5 3 3 4 6 4 9 0 4-3 7-8 7z"/></svg></div><span>Daily calorie target</span><div><strong id="mm-plan-cal">—</strong> <small>kcal</small></div></div><div class="mm-plan-target"><div class="mm-pro-icon"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7v10m-4-7v4m14-7v10m4-7v4M7 12h10"/></svg></div><span>Daily protein target</span><div><strong id="mm-plan-pro">—</strong> <small>grams</small></div></div></div>
+<button id="generate-plan-btn" type="button" onclick="generateDailyPlan()"><svg class="mm-spark" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/></svg><span>Generate Today's Meal Plan</span><svg class="mm-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+<p class="mm-plan-saved"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11zM8 12l3 3 5-6"/></svg><span>Your daily meal plan is automatically saved on this device.</span></p>
+<div class="mm-plan-info"><div class="mm-plan-info-icon"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v7a3 3 0 0 0 6 0V3M7 3v18M19 3c-4 3-4 8 0 10h2M21 3v18"/></svg></div><div><strong>Personalised for your goals</strong><p>Indian meals, dietary preferences, balanced macros and step-by-step recipes.</p></div></div>
+</section>
 
       <div id="plan-results-container" class="space-y-3"></div>
     </main>
@@ -5088,9 +5031,14 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
       const m = userProfile.metrics;
 
       const dayPill = document.getElementById('plan-day-pill');
-      const targetPill = document.getElementById('plan-target-pill');
+      const cal = document.getElementById('mm-plan-cal');
+      const pro = document.getElementById('mm-plan-pro');
+      const dateLabel = document.getElementById('mm-plan-date');
+      if (cal) cal.textContent = Number.isFinite(Number(m.targetCalories)) ? Number(m.targetCalories).toLocaleString('en-IN') : '—';
+      if (pro) pro.textContent = Number.isFinite(Number(m.proteinGrams)) ? Number(m.proteinGrams).toLocaleString('en-IN') : '—';
+      if (dateLabel) dateLabel.textContent = selectedDateStr.split('-').reverse().map((v,i)=>i===2?v.slice(-2):v).join('/');
       if (dayPill) dayPill.textContent = `${dayName} • ${getDietLabel(dietCode)}`;
-      if (targetPill) targetPill.textContent = `${m.targetCalories} kcal • ${m.proteinGrams}g P`;
+      if (dayPill) dayPill.dataset.diet = dietCode;
 
       if (dailyPlansCache[selectedDateStr]) {
         dailyPlansCache[selectedDateStr] = normalizeDailyPlan(dailyPlansCache[selectedDateStr], m);
@@ -5338,7 +5286,7 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
     window.generateDailyPlan = async function() {
       const btn = document.getElementById('generate-plan-btn');
       btn.disabled = true;
-      btn.innerHTML = `<span class="animate-spin inline-block w-4 h-4 border-2 border-gray-950 border-t-transparent rounded-full"></span><span>Building Today's Meal Plan...</span>`;
+      btn.innerHTML = `<span class="mm-plan-spinner" aria-hidden="true"></span><span>Building Today's Meal Plan...</span>`;
 
       const dObj = parseYMD(selectedDateStr);
       const dayName = DAYS_FULL[dObj.getDay()];
@@ -5377,7 +5325,7 @@ For each meal, provide a realistic meal title, Indian ingredients/food descripti
         showToast('Generated today’s meal suggestions with Smart Coach!', 'success');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<span>✨ Regenerate Today's Meal Plan</span>`;
+        btn.innerHTML = `<svg class="mm-spark" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/></svg><span>Regenerate Today's Meal Plan</span><svg class="mm-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>`;
       }
     };
 
