@@ -125,7 +125,7 @@
 
 
   <style id="fitcoach-brand-readability">
-    .fitcoach-brand-logo { display:block; width:clamp(118px, 25vw, 154px); height:54px; object-fit:contain; object-position:left center; flex:0 0 auto; }
+    .fitcoach-brand-logo { display:block; width:clamp(148px, 22vw, 214px); height:66px; object-fit:contain; object-position:left center; flex:0 1 auto; max-width:48vw; }
     #app-shell > header { min-height:68px; }
     /* Keep compact metadata legible on both desktop and mobile. */
     #app-shell .text-\[8px\] { font-size:11px !important; line-height:1.4 !important; }
@@ -142,7 +142,8 @@
     html[data-theme="light"] #app-shell .text-cyan-200, html[data-theme="light"] #app-shell .text-cyan-300, html[data-theme="light"] #app-shell .text-cyan-400 { color:#075d70 !important; }
     html[data-theme="light"] #app-shell .text-pink-200, html[data-theme="light"] #app-shell .text-pink-300, html[data-theme="light"] #app-shell .text-pink-400 { color:#9d174d !important; }
     html[data-theme="light"] #app-shell .text-gray-50 { color:#17211d !important; }
-    @media (max-width:480px) { .fitcoach-brand-logo { width:118px; height:48px; } #app-shell > header { padding-left:12px; padding-right:12px; } }
+    @media (max-width:480px) { .fitcoach-brand-logo { width:clamp(132px, 42vw, 166px); height:56px; max-width:52vw; } #app-shell > header { padding-left:12px; padding-right:12px; } }
+    @media (min-width:481px) and (max-width:900px) { .fitcoach-brand-logo { width:clamp(158px, 27vw, 190px); height:62px; } }
   </style>
 
   <style id="fitcoach-theme-overrides">
@@ -221,6 +222,22 @@
     @media (prefers-reduced-motion:no-preference) { body, body * { transition: background-color .18s ease, color .18s ease, border-color .18s ease; } }
   </style>
 
+
+  <style id="fitcoach-accessibility-contrast">
+    /* Readable form controls, helper text and surfaces in both colour modes. */
+    #app-shell input, #app-shell select, #app-shell textarea { font-size:14px; }
+    #app-shell input::placeholder, #app-shell textarea::placeholder { opacity:1; }
+    #app-shell button:focus-visible, #app-shell a:focus-visible, #app-shell input:focus-visible, #app-shell select:focus-visible, #app-shell textarea:focus-visible { outline:2px solid #10b981; outline-offset:2px; }
+    html[data-theme="dark"] #app-shell input, html[data-theme="dark"] #app-shell select, html[data-theme="dark"] #app-shell textarea { background-color:#111827; color:#f9fafb; border-color:#4b5563; }
+    html[data-theme="dark"] #app-shell input::placeholder, html[data-theme="dark"] #app-shell textarea::placeholder { color:#9ca3af; }
+    html[data-theme="light"] #app-shell .text-gray-400, html[data-theme="light"] #app-shell .text-gray-500, html[data-theme="light"] #app-shell .text-gray-600 { color:#53645b !important; }
+    html[data-theme="light"] #app-shell [class*="bg-black"], html[data-theme="light"] #app-shell [class*="bg-gray-950"] { color:#17211d; }
+    html[data-theme="light"] #app-shell .bg-emerald-900, html[data-theme="light"] #app-shell .bg-emerald-950 { background-color:#d9f3e5 !important; }
+    html[data-theme="light"] #app-shell .bg-amber-900, html[data-theme="light"] #app-shell .bg-amber-950 { background-color:#fff0cc !important; }
+    html[data-theme="light"] #app-shell .bg-red-900, html[data-theme="light"] #app-shell .bg-red-950 { background-color:#fee2e2 !important; }
+    html[data-theme="light"] #app-shell .bg-blue-900, html[data-theme="light"] #app-shell .bg-blue-950 { background-color:#dbeafe !important; }
+    @media (max-width:480px) { #app-shell input, #app-shell select, #app-shell textarea { font-size:14px; min-height:40px; } }
+  </style>
 
   <style id="fitcoach-splash-styles">
     #fitcoach-splash {
@@ -3420,6 +3437,14 @@
       ])
     };
 
+    // Keep the initial workout plan focused: only the first four curated exercises
+    // are preloaded for each muscle group. The full bank remains available in the
+    // exercise selector so users can add or swap exercises whenever they want.
+    const PRESET_EXERCISES_PER_MUSCLE = 4;
+    function getPresetExercises(muscleGroup) {
+      return (MUSCLE_EXERCISE_BANK[muscleGroup] || []).slice(0, PRESET_EXERCISES_PER_MUSCLE);
+    }
+
     const ALL_MUSCLE_GROUPS = Object.keys(MUSCLE_EXERCISE_BANK);
 
     function createExerciseRowFromTemplate(tpl) {
@@ -3474,7 +3499,7 @@
         draftWorkoutRows = draftWorkoutRows.filter(r => r.muscleGroup !== muscle);
       } else {
         selectedMusclesForDay.push(muscle);
-        const suggestions = (MUSCLE_EXERCISE_BANK[muscle] || []).map(createExerciseRowFromTemplate);
+        const suggestions = getPresetExercises(muscle).map(createExerciseRowFromTemplate);
         draftWorkoutRows = [...draftWorkoutRows, ...suggestions];
       }
       renderWorkoutLogTab();
@@ -3483,7 +3508,7 @@
     window.applySuggestedExercisesForSelectedMuscles = function(forceOverwrite = false) {
       const built = [];
       selectedMusclesForDay.forEach(muscle => {
-        (MUSCLE_EXERCISE_BANK[muscle] || []).forEach(tpl => {
+        getPresetExercises(muscle).forEach(tpl => {
           built.push(createExerciseRowFromTemplate(tpl));
         });
       });
@@ -3511,7 +3536,7 @@
       } else {
         const built = [];
         selectedMusclesForDay.forEach(muscle => {
-          (MUSCLE_EXERCISE_BANK[muscle] || []).forEach(tpl => built.push(createExerciseRowFromTemplate(tpl)));
+          getPresetExercises(muscle).forEach(tpl => built.push(createExerciseRowFromTemplate(tpl)));
         });
         draftWorkoutRows = built;
         const coreEl = document.getElementById('wlog-core-summary');
@@ -3533,7 +3558,7 @@
       selectedMusclesForDay = presetMap[dayNum] || ['Chest', 'Triceps'];
       if (!workoutLogsByDate[selectedDateStr]) {
         const built = [];
-        selectedMusclesForDay.forEach(m => (MUSCLE_EXERCISE_BANK[m] || []).forEach(tpl => built.push(createExerciseRowFromTemplate(tpl))));
+        selectedMusclesForDay.forEach(m => getPresetExercises(m).forEach(tpl => built.push(createExerciseRowFromTemplate(tpl))));
         draftWorkoutRows = built;
       }
       renderWorkoutLogTab();
