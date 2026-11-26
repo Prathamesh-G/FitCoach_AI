@@ -313,6 +313,17 @@
     @media (min-width:481px) { #app-shell .fitcoach-brand-logo { width:clamp(180px, 23vw, 230px) !important; height:auto !important; max-height:72px; } }
   </style>
 
+
+  <style id="mettlemap-header-layout">
+    #app-shell .mettlemap-header-brand { max-width: min(74vw, 410px); }
+    #app-shell .mettlemap-header-brand .fitcoach-brand-logo { width: clamp(205px, 34vw, 305px) !important; height: auto !important; max-height: 88px !important; max-width: 100% !important; }
+    #app-shell #header-day-badge { display: inline-flex; align-items: center; white-space: nowrap; }
+    @media (max-width:480px) {
+      #app-shell .mettlemap-header-brand { max-width: min(70vw, 300px); }
+      #app-shell .mettlemap-header-brand .fitcoach-brand-logo { width: clamp(188px, 58vw, 238px) !important; max-height: 74px !important; }
+      #app-shell #header-greeting { max-width: 65vw; }
+    }
+  </style>
 </head>
 <body class="min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
 
@@ -665,14 +676,14 @@
     <!-- Top Header Bar -->
     <header class="sticky top-0 z-30 bg-[#090d16]/90 backdrop-blur-md border-b border-gray-800/80 px-4 pt-safe pb-3">
       <div class="flex items-center justify-between">
-        <div>
-          <div class="flex items-center gap-2">
+        <div class="mettlemap-header-brand flex flex-col items-start min-w-0">
+          <div class="flex items-center">
             <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3NjAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgNzYwIDE4MCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMjJjNThiIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYTNlNjM1Ii8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTIgMTIpIj48cGF0aCBkPSJNNzggNEMzOCA0IDggMzQgOCA3NGMwIDQ4IDcwIDkxIDcwIDkxczcwLTQzIDcwLTkxQzE0OCAzNCAxMTggNCA3OCA0WiIgZmlsbD0idXJsKCNnKSIvPjxwYXRoIGQ9Ik00MiA5NGMxNy0yOSAzNi00MiA2Ni01ME01MiAxMTJsMTgtMTggMjAgMTAgMjctMzUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzEwMmEyMiIgc3Ryb2tlLXdpZHRoPSI5IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48Y2lyY2xlIGN4PSIxMTgiIGN5PSIzOSIgcj0iMTAiIGZpbGw9IiMxMDJhMjIiLz48Y2lyY2xlIGN4PSI1MiIgY3k9IjExMiIgcj0iOCIgZmlsbD0iIzEwMmEyMiIvPjwvZz48dGV4dCB4PSIxODQiIHk9IjExMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBIZWx2ZXRpY2EsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iODIiIGZvbnQtd2VpZ2h0PSI4MDAiIGxldHRlci1zcGFjaW5nPSItMyIgZmlsbD0iI2U4ZjNlZCI+TWV0dGxlPHRzcGFuIGZpbGw9IiNhM2U2MzUiPk1hcDwvdHNwYW4+PC90ZXh0Pjwvc3ZnPg==" alt="MettleMap" class="fitcoach-brand-logo" width="154" height="64" decoding="async" fetchpriority="high" />
-            <span id="header-day-badge" class="px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-              WED • NON-VEG
-            </span>
           </div>
-          <p id="header-greeting" class="text-xs text-gray-400 mt-0.5">Hey Champ, let's hit your protein target!</p>
+          <span id="header-day-badge" class="px-2 py-0.5 mt-1 rounded-full text-[11px] font-bold uppercase tracking-wide bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            WED • NON-VEG
+          </span>
+          <p id="header-greeting" class="text-xs text-gray-400 mt-1">Hey Champ, let's hit your protein target!</p>
         </div>
 
         <div class="flex items-center gap-1.5 shrink-0">
