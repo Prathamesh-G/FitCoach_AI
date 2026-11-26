@@ -267,6 +267,52 @@
     }
   </style>
 
+
+  <style id="fitcoach-light-mode-final-contrast">
+    /* Light mode / Auto daytime: cover common utilities and mixed card surfaces across every tab. */
+    html[data-theme="light"] #app-shell { color:#17211d !important; }
+    html[data-theme="light"] #app-shell [class*="text-gray-"] { color:#425249 !important; }
+    html[data-theme="light"] #app-shell [class*="text-white"],
+    html[data-theme="light"] #app-shell [class*="text-gray-100"],
+    html[data-theme="light"] #app-shell [class*="text-gray-200"] { color:#17211d !important; }
+    html[data-theme="light"] #app-shell [class*="text-gray-300"] { color:#34443c !important; }
+    html[data-theme="light"] #app-shell [class*="text-gray-400"],
+    html[data-theme="light"] #app-shell [class*="text-gray-500"],
+    html[data-theme="light"] #app-shell [class*="text-gray-600"] { color:#53645b !important; }
+    html[data-theme="light"] #app-shell [class*="text-emerald-"] { color:#087447 !important; }
+    html[data-theme="light"] #app-shell [class*="text-teal-"] { color:#086b62 !important; }
+    html[data-theme="light"] #app-shell [class*="text-amber-"],
+    html[data-theme="light"] #app-shell [class*="text-yellow-"],
+    html[data-theme="light"] #app-shell [class*="text-lime-"] { color:#805000 !important; }
+    html[data-theme="light"] #app-shell [class*="text-sky-"],
+    html[data-theme="light"] #app-shell [class*="text-cyan-"] { color:#075985 !important; }
+    html[data-theme="light"] #app-shell [class*="text-blue-"] { color:#1d4f91 !important; }
+    html[data-theme="light"] #app-shell [class*="text-purple-"],
+    html[data-theme="light"] #app-shell [class*="text-violet-"],
+    html[data-theme="light"] #app-shell [class*="text-indigo-"] { color:#55408d !important; }
+    html[data-theme="light"] #app-shell [class*="text-pink-"],
+    html[data-theme="light"] #app-shell [class*="text-rose-"] { color:#9d174d !important; }
+    html[data-theme="light"] #app-shell [class*="text-red-"] { color:#a8202d !important; }
+    html[data-theme="light"] #app-shell [class*="text-orange-"] { color:#98400a !important; }
+    html[data-theme="light"] #app-shell [class*="bg-gray-950"],
+    html[data-theme="light"] #app-shell [class*="bg-gray-900"],
+    html[data-theme="light"] #app-shell [class*="bg-gray-800"],
+    html[data-theme="light"] #app-shell [class*="bg-gray-700"],
+    html[data-theme="light"] #app-shell [class*="bg-black"] { background-color:#f5f8f6 !important; }
+    html[data-theme="light"] #app-shell [class*="border-gray-"] { border-color:#d2ded6 !important; }
+    html[data-theme="light"] #app-shell .bg-gradient-to-br,
+    html[data-theme="light"] #app-shell .bg-gradient-to-r { background-image:none !important; background-color:#f3f7f4 !important; }
+    html[data-theme="light"] #app-shell button[class*="bg-emerald-500"],
+    html[data-theme="light"] #app-shell button[class*="bg-teal-500"],
+    html[data-theme="light"] #app-shell button[class*="bg-amber-500"],
+    html[data-theme="light"] #app-shell button[class*="bg-orange-500"] { color:#10251a !important; }
+    html[data-theme="light"] #app-shell .tracker-theme-toggle { background:#fff !important; border-color:#cbd8d0 !important; }
+    html[data-theme="light"] #app-shell .tracker-theme-toggle .theme-choice { background:#edf2ef !important; color:#34443c !important; }
+    html[data-theme="light"] #app-shell .tracker-theme-toggle .theme-choice[aria-pressed="true"] { background:#d8f3e5 !important; color:#075b38 !important; border-color:#119765 !important; }
+    @media (max-width:480px) { #app-shell .fitcoach-brand-logo { width:clamp(148px, 47vw, 178px) !important; height:auto !important; max-height:62px; } }
+    @media (min-width:481px) { #app-shell .fitcoach-brand-logo { width:clamp(180px, 23vw, 230px) !important; height:auto !important; max-height:72px; } }
+  </style>
+
 </head>
 <body class="min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
 
@@ -604,6 +650,15 @@
             ✓ Save Changes
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Saved meal photo viewer: tap a thumbnail to inspect the original saved image -->
+    <div id="logged-meal-photo-viewer" class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-3" onclick="closeLoggedMealPhotoViewer()">
+      <div class="w-full max-w-3xl flex flex-col items-center gap-3" onclick="event.stopPropagation()">
+        <div class="w-full flex items-center justify-between text-white"><span id="logged-meal-photo-caption" class="text-sm font-semibold">Saved meal photo</span><button type="button" onclick="closeLoggedMealPhotoViewer()" class="px-3 py-2 rounded-xl bg-white/10 text-white" aria-label="Close photo">✕</button></div>
+        <img id="logged-meal-photo-full" src="" alt="Submitted food photo" class="max-w-full max-h-[78vh] object-contain rounded-xl shadow-2xl" />
+        <p class="text-xs text-white/70">Photo submitted with Snap Analyse</p>
       </div>
     </div>
 
@@ -1183,12 +1238,19 @@
     <!-- TAB 3B: FLEXIBLE MUSCLE GROUP & MULTI-SET WORKOUT LOG -->
     <main id="tab-workout" class="hidden p-4 space-y-4">
       <div class="bg-gradient-to-br from-gray-900 to-gray-950 border border-gray-800 rounded-3xl p-5 space-y-3.5">
-        <div class="flex items-center justify-between gap-2">
+        <div class="flex items-start justify-between gap-2 flex-wrap">
           <div>
             <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400">Training Tracker</span>
             <h2 class="text-lg font-extrabold text-white">Workout Log (Muscles & Sets)</h2>
           </div>
-          <span id="workout-log-date-pill" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-gray-800 text-gray-300">Today</span>
+          <div class="flex items-center gap-1.5 flex-wrap justify-end">
+            <span id="workout-log-date-pill" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-gray-800 text-gray-300">Today</span>
+            <div class="tracker-theme-toggle inline-flex rounded-xl border border-gray-700 p-1 gap-1" aria-label="Theme mode on Tracker tab">
+              <button type="button" data-theme-choice="light" onclick="setThemePreference('light')" class="theme-choice px-2 py-1.5 rounded-lg text-[11px] font-bold" title="Light theme">☀</button>
+              <button type="button" data-theme-choice="dark" onclick="setThemePreference('dark')" class="theme-choice px-2 py-1.5 rounded-lg text-[11px] font-bold" title="Dark theme">☾</button>
+              <button type="button" data-theme-choice="auto" onclick="setThemePreference('auto')" class="theme-choice px-2 py-1.5 rounded-lg text-[11px] font-bold" title="Automatic theme">Auto</button>
+            </div>
+          </div>
         </div>
         <p class="text-xs text-gray-400">Choose a suggested 5-day training split, or customise muscle groups below. Exercises auto-suggest with multi-set weight (kg) & reps.</p>
 
@@ -3009,7 +3071,7 @@
                 <h4 class="text-sm font-bold text-white truncate">${escapeHtml(meal.name)}</h4>
                 ${timeLabel ? `<span class="text-[10px] text-gray-500 shrink-0">${timeLabel}</span>` : ''}
               </div>
-              ${Array.isArray(meal.photos) && meal.photos.length ? `<div class=\"flex gap-1.5 overflow-x-auto mt-2\">${meal.photos.slice(0,4).map(src => `<img src=\"${src}\" alt=\"Logged food photo\" class=\"w-14 h-14 rounded-lg object-cover border border-gray-700\" />`).join('')}</div>` : ''}
+              ${Array.isArray(meal.photos) && meal.photos.length ? `<div class=\"flex gap-2 overflow-x-auto mt-2 pb-1\" aria-label=\"Saved meal photos\">${meal.photos.slice(0,4).map((src, photoIndex) => `<button type=\"button\" onclick=\"openLoggedMealPhoto('${meal.id}', ${photoIndex})\" class=\"shrink-0 rounded-xl border border-gray-300 dark:border-gray-700 overflow-hidden focus:outline-none focus:ring-2 focus:ring-emerald-500\" aria-label=\"View submitted meal photo ${photoIndex+1}\"><img src=\"${src}\" alt=\"Submitted food photo ${photoIndex+1}\" class=\"w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover\" loading=\"lazy\" /><span class=\"block text-[10px] text-center px-1 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200\">Photo ${photoIndex+1}</span></button>`).join('')}</div>` : ''}
               <div class="flex flex-wrap items-center gap-2 mt-1.5 text-[11px] font-semibold">
                 <span class="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300">${Math.round(meal.calories)} kcal</span>
                 <span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300">${Math.round(meal.protein)}g P</span>
@@ -3763,6 +3825,22 @@
       showToast('Meal removed', 'info');
     };
 
+    window.openLoggedMealPhoto = function(mealId, photoIndex = 0) {
+      const meal = allMeals.find(m => String(m.id) === String(mealId));
+      const photos = Array.isArray(meal?.photos) ? meal.photos : [];
+      const src = photos[photoIndex];
+      if (!src) { showToast('This meal does not have a saved photo. Photos logged before this update may not be recoverable.', 'info'); return; }
+      const viewer = document.getElementById('logged-meal-photo-viewer');
+      document.getElementById('logged-meal-photo-full').src = src;
+      document.getElementById('logged-meal-photo-caption').textContent = `${meal.name || 'Logged meal'} · Photo ${photoIndex + 1} of ${photos.length}`;
+      viewer.classList.remove('hidden'); viewer.classList.add('flex');
+    };
+    window.closeLoggedMealPhotoViewer = function() {
+      const viewer = document.getElementById('logged-meal-photo-viewer');
+      viewer.classList.add('hidden'); viewer.classList.remove('flex');
+      document.getElementById('logged-meal-photo-full').src = '';
+    };
+
     window.openEditMealModal = function(mealId) {
       const meal = allMeals.find(m => m.id === mealId);
       if (!meal) return;
@@ -3771,7 +3849,7 @@
       document.getElementById('edit-meal-name').value = meal.name || '';
       document.getElementById('edit-meal-description').value = meal.description || meal.name || '';
       const photoBox = document.getElementById('edit-meal-photos');
-      photoBox.innerHTML = (meal.photos || []).map(src => `<img src="${src}" class="w-16 h-16 object-cover rounded-lg border border-gray-700" alt="Saved meal photo"/>`).join('');
+      photoBox.innerHTML = (meal.photos || []).map((src, photoIndex) => `<button type="button" onclick="openLoggedMealPhoto('${meal.id}', ${photoIndex})" class="rounded-xl overflow-hidden border border-gray-300 dark:border-gray-700"><img src="${src}" class="w-20 h-20 object-cover" alt="Saved meal photo ${photoIndex+1}" loading="lazy"/><span class="block text-[10px] px-1 text-gray-700 dark:text-gray-200">View ${photoIndex+1}</span></button>`).join('');
       document.getElementById('edit-meal-cal').value = Math.round(meal.calories || 0);
       document.getElementById('edit-meal-pro').value = Math.round(meal.protein || 0);
       document.getElementById('edit-meal-carb').value = Math.round(meal.carbs || 0);
@@ -3889,7 +3967,7 @@
         img.onerror = () => onError(new Error('This image format could not be opened. Try a JPG or PNG.'));
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          const maxDim = 760;
+          const maxDim = 560;
           let w = img.width;
           let h = img.height;
           if (w > maxDim || h > maxDim) {
@@ -3905,7 +3983,7 @@
           canvas.height = h;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, w, h);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.60);
           onReady(dataUrl, dataUrl.split(',')[1], 'image/jpeg');
         };
         img.src = e.target.result;
