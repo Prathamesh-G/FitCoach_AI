@@ -324,6 +324,39 @@
       #app-shell #header-greeting { max-width: 65vw; }
     }
   </style>
+
+  <style id="mettlemap-flat-visual-refresh">
+    /* Unified, flatter visual language across all app tabs */
+    #app-shell main { --mm-card-border: rgba(120,145,132,.22); }
+    #app-shell main .bg-gradient-to-br, #app-shell main .bg-gradient-to-r { background-image:none !important; }
+    #app-shell main section[class*="rounded-3xl"],
+    #app-shell main > div[class*="rounded-3xl"],
+    #app-shell main > div[class*="rounded-2xl"] { box-shadow:none !important; border-color:var(--mm-card-border) !important; }
+    #app-shell main section[class*="rounded-3xl"] { border-radius:20px !important; }
+    #app-shell main .shadow-lg, #app-shell main .shadow-xl, #app-shell main .shadow-2xl { box-shadow:none !important; }
+    #app-shell main button { border-radius:12px; transition:background-color .16s ease, border-color .16s ease, transform .16s ease; }
+    #app-shell main button:active { transform:scale(.98); }
+    #app-shell main svg { flex-shrink:0; }
+    #app-shell main button svg { width:16px; height:16px; stroke-width:1.9; }
+    #app-shell .dashboard-theme-toggle { flex-shrink:0; background:rgba(17,24,39,.72); }
+    #app-shell .dashboard-theme-toggle .theme-choice { min-width:36px; min-height:32px; display:inline-flex; align-items:center; justify-content:center; color:#aab8b0; background:transparent; border:1px solid transparent; }
+    #app-shell .dashboard-theme-toggle .theme-choice[aria-pressed="true"] { background:rgba(16,185,129,.18); border-color:#10b981; color:#6ee7b7; }
+    html[data-theme="light"] #app-shell .dashboard-theme-toggle { background:#fff !important; border-color:#cbd8d0 !important; }
+    html[data-theme="light"] #app-shell .dashboard-theme-toggle .theme-choice { color:#405248 !important; background:#f0f4f1 !important; }
+    html[data-theme="light"] #app-shell .dashboard-theme-toggle .theme-choice[aria-pressed="true"] { background:#d8f3e5 !important; color:#075b38 !important; border-color:#119765 !important; }
+    /* Keep the workout tab's theme control equally legible and touch-friendly. */
+    #app-shell .tracker-theme-toggle .theme-choice { min-width:34px; min-height:32px; display:inline-flex; align-items:center; justify-content:center; }
+    /* Flat icon treatment for the fixed bottom navigation. */
+    #app-shell nav.fixed.bottom-0 .nav-btn svg { width:21px; height:21px; stroke-width:1.8; }
+    #app-shell nav.fixed.bottom-0 .nav-btn { min-height:48px; }
+    html[data-theme="light"] #app-shell main .bg-gradient-to-br,
+    html[data-theme="light"] #app-shell main .bg-gradient-to-r { background-image:none !important; }
+    @media (max-width:480px) {
+      #app-shell main { padding-left:13px !important; padding-right:13px !important; }
+      #app-shell .dashboard-theme-toggle .theme-choice { min-width:34px; padding-left:9px; padding-right:9px; }
+    }
+  </style>
+
 </head>
 <body class="min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
 
@@ -713,6 +746,14 @@
             <button onclick="changeSelectedDate(1)" id="next-date-btn" class="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white transition" title="Next Day">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
             </button>
+          </div>
+        </div>
+        <div class="flex items-center justify-between gap-2 px-1 pt-1">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-gray-500">Appearance</span>
+          <div class="tracker-theme-toggle dashboard-theme-toggle inline-flex items-center rounded-xl border border-gray-700 p-1 gap-1" role="group" aria-label="Theme mode on Tracker tab">
+            <button type="button" data-theme-choice="light" onclick="setThemePreference('light')" class="theme-choice px-2.5 py-1.5 rounded-lg text-[11px] font-bold" title="Light theme" aria-label="Light theme"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button>
+            <button type="button" data-theme-choice="dark" onclick="setThemePreference('dark')" class="theme-choice px-2.5 py-1.5 rounded-lg text-[11px] font-bold" title="Dark theme" aria-label="Dark theme"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg></button>
+            <button type="button" data-theme-choice="auto" onclick="setThemePreference('auto')" class="theme-choice px-2.5 py-1.5 rounded-lg text-[11px] font-bold" title="Automatic theme" aria-label="Automatic theme">Auto</button>
           </div>
         </div>
 
