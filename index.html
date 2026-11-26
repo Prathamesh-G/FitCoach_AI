@@ -309,6 +309,8 @@
     html[data-theme="light"] #app-shell .tracker-theme-toggle { background:#fff !important; border-color:#cbd8d0 !important; }
     html[data-theme="light"] #app-shell .tracker-theme-toggle .theme-choice { background:#edf2ef !important; color:#34443c !important; }
     html[data-theme="light"] #app-shell .tracker-theme-toggle .theme-choice[aria-pressed="true"] { background:#d8f3e5 !important; color:#075b38 !important; border-color:#119765 !important; }
+    html[data-theme="light"] #app-shell .feedback-choice { background:#edf2ef !important; color:#34443c !important; border-color:#cbd8d0 !important; }
+    html[data-theme="light"] #app-shell .feedback-choice[aria-pressed="true"] { background:#d8f3e5 !important; color:#075b38 !important; border-color:#119765 !important; }
     @media (max-width:480px) { #app-shell .fitcoach-brand-logo { width:clamp(148px, 47vw, 178px) !important; height:auto !important; max-height:62px; } }
     @media (min-width:481px) { #app-shell .fitcoach-brand-logo { width:clamp(180px, 23vw, 230px) !important; height:auto !important; max-height:72px; } }
   </style>
@@ -1458,6 +1460,16 @@
           <button type="button" data-theme-choice="auto" onclick="setThemePreference('auto')" class="theme-choice rounded-xl border border-emerald-500 bg-emerald-500/15 px-2 py-2.5 text-xs font-bold text-emerald-300">◐ Auto</button>
         </div>
         <p class="text-[11px] text-gray-500">Auto switches to light from 6:00 AM to 5:59 PM and dark from 6:00 PM to 5:59 AM, using your device's local time.</p>
+        <div class="border-t border-gray-700/70 pt-3 mt-3 space-y-2">
+          <div class="flex items-center justify-between gap-2"><div><h4 class="text-xs font-extrabold text-white">Button feedback</h4><p class="text-[11px] text-gray-400">Choose a subtle response when you tap buttons.</p></div><span id="feedback-mode-status" class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">AUTO</span></div>
+          <div class="grid grid-cols-4 gap-2" role="group" aria-label="Button feedback preference">
+            <button type="button" data-feedback-choice="auto" onclick="setFeedbackPreference('auto')" class="feedback-choice rounded-xl border border-gray-700 bg-gray-800 px-1.5 py-2 text-[11px] font-bold text-white" aria-pressed="false">Auto</button>
+            <button type="button" data-feedback-choice="haptic" onclick="setFeedbackPreference('haptic')" class="feedback-choice rounded-xl border border-gray-700 bg-gray-800 px-1.5 py-2 text-[11px] font-bold text-white" aria-pressed="false">Haptic</button>
+            <button type="button" data-feedback-choice="sound" onclick="setFeedbackPreference('sound')" class="feedback-choice rounded-xl border border-gray-700 bg-gray-800 px-1.5 py-2 text-[11px] font-bold text-white" aria-pressed="false">Sound</button>
+            <button type="button" data-feedback-choice="off" onclick="setFeedbackPreference('off')" class="feedback-choice rounded-xl border border-gray-700 bg-gray-800 px-1.5 py-2 text-[11px] font-bold text-white" aria-pressed="false">Off</button>
+          </div>
+          <p class="text-[10px] text-gray-500">Auto uses vibration when supported, otherwise a soft sound. Silent-mode detection is not available to websites.</p>
+        </div>
       </section>
       <div class="bg-gray-900 border border-gray-800 rounded-3xl p-5">
         <div class="flex items-center justify-between mb-4">
@@ -1500,7 +1512,8 @@
           <div id="prof-week-badges" class="grid grid-cols-7 gap-1.5 text-center">
             <!-- Populated dynamically -->
           </div>
-        </div>
+        
+</div>
       </div>
 
       <!-- Weekly Body Weight & Waist Trend Tracker -->
@@ -1757,6 +1770,67 @@
     window.addEventListener('focus', () => applyTheme());
     document.addEventListener('visibilitychange', () => { if (!document.hidden) applyTheme(); });
     applyTheme();
+
+    // --- BUTTON FEEDBACK: haptics where supported, otherwise a subtle synthesized tap sound ---
+    const FEEDBACK_STORAGE_KEY = 'mettlemap-feedback-preference';
+    let feedbackAudioContext = null;
+    function getFeedbackPreference() {
+      try { return localStorage.getItem(FEEDBACK_STORAGE_KEY) || 'auto'; } catch (_) { return 'auto'; }
+    }
+    function updateFeedbackControls() {
+      const preference = getFeedbackPreference();
+      document.querySelectorAll('[data-feedback-choice]').forEach(button => {
+        const active = button.dataset.feedbackChoice === preference;
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        button.classList.toggle('ring-1', active);
+        button.classList.toggle('ring-emerald-500', active);
+      });
+      const status = document.getElementById('feedback-mode-status');
+      if (status) status.textContent = preference.toUpperCase();
+    }
+    window.setFeedbackPreference = function(preference) {
+      if (!['auto', 'haptic', 'sound', 'off'].includes(preference)) return;
+      try { localStorage.setItem(FEEDBACK_STORAGE_KEY, preference); } catch (_) {}
+      updateFeedbackControls();
+      if (preference !== 'off') playButtonFeedback(true);
+      if (typeof showToast === 'function') showToast('Button feedback set to ' + preference + '.', 'success');
+    };
+    function playTapSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        feedbackAudioContext = feedbackAudioContext || new AudioCtx();
+        if (feedbackAudioContext.state === 'suspended') feedbackAudioContext.resume();
+        const oscillator = feedbackAudioContext.createOscillator();
+        const gain = feedbackAudioContext.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(660, feedbackAudioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(520, feedbackAudioContext.currentTime + 0.045);
+        gain.gain.setValueAtTime(0.0001, feedbackAudioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.055, feedbackAudioContext.currentTime + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001, feedbackAudioContext.currentTime + 0.065);
+        oscillator.connect(gain); gain.connect(feedbackAudioContext.destination);
+        oscillator.start(); oscillator.stop(feedbackAudioContext.currentTime + 0.07);
+      } catch (_) {}
+    }
+    function playButtonFeedback(preview = false) {
+      const preference = getFeedbackPreference();
+      if (preference === 'off') return;
+      const canVibrate = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
+      if ((preference === 'auto' || preference === 'haptic') && canVibrate) {
+        try { navigator.vibrate(preview ? 18 : 12); } catch (_) {}
+        return;
+      }
+      if (preference === 'sound' || preference === 'auto' || preference === 'haptic') playTapSound();
+    }
+    document.addEventListener('click', event => {
+      const button = event.target && event.target.closest ? event.target.closest('button, [role="button"]') : null;
+      if (!button || button.disabled || button.getAttribute('aria-disabled') === 'true' || button.hasAttribute('data-no-feedback')) return;
+      if (button.matches('[data-feedback-choice]')) return;
+      playButtonFeedback();
+    }, true);
+    document.addEventListener('DOMContentLoaded', updateFeedbackControls);
+    updateFeedbackControls();
 
     let db = null;
     let auth = null;
