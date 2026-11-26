@@ -122,6 +122,29 @@
     #tab-plan *, #tab-workout * { min-width: 0; }
     #tab-plan h3, #tab-plan h4, #tab-workout h2, #tab-workout h3, #tab-workout h4 { overflow-wrap: anywhere; }
 </style>
+
+  <style id="fitcoach-theme-overrides">
+    html { color-scheme: dark; }
+    html[data-theme="light"] { color-scheme: light; background:#f4f7f5; }
+    html[data-theme="light"] body { background:#f4f7f5 !important; color:#17211d !important; }
+    html[data-theme="light"] .bg-gray-950, html[data-theme="light"] .bg-gray-900, html[data-theme="light"] .bg-gray-900\/90, html[data-theme="light"] .bg-gray-900\/70 { background-color:#ffffff !important; }
+    html[data-theme="light"] .bg-gray-800, html[data-theme="light"] .bg-gray-800\/80 { background-color:#edf2ef !important; }
+    html[data-theme="light"] .bg-gray-700 { background-color:#e3ebe6 !important; }
+    html[data-theme="light"] .border-gray-800, html[data-theme="light"] .border-gray-700 { border-color:#d9e3dd !important; }
+    html[data-theme="light"] .text-white, html[data-theme="light"] .text-gray-100, html[data-theme="light"] .text-gray-200 { color:#17211d !important; }
+    html[data-theme="light"] .text-gray-300 { color:#34443c !important; }
+    html[data-theme="light"] .text-gray-400, html[data-theme="light"] .text-gray-500 { color:#68786f !important; }
+    html[data-theme="light"] .text-gray-600 { color:#7c8a82 !important; }
+    html[data-theme="light"] nav.fixed.bottom-0 { background:rgba(255,255,255,.94) !important; border-color:#d9e3dd !important; }
+    html[data-theme="light"] input, html[data-theme="light"] select, html[data-theme="light"] textarea { background-color:#fff !important; color:#17211d !important; border-color:#d3ded7 !important; }
+    html[data-theme="light"] .theme-settings-card { background:#fff !important; }
+    html[data-theme="light"] .theme-choice { color:#26372e !important; background:#edf2ef !important; border-color:#d5e0d9 !important; }
+    html[data-theme="light"] .theme-choice[aria-pressed="true"] { background:#dff5e9 !important; border-color:#16a36a !important; color:#087447 !important; }
+    html[data-theme="dark"] .theme-choice[aria-pressed="true"] { background:rgba(16,185,129,.16) !important; border-color:#10b981 !important; color:#6ee7b7 !important; }
+    html[data-theme="light"] .bg-\[\#090d16\]\/95 { background:rgba(255,255,255,.94) !important; }
+    @media (prefers-reduced-motion:no-preference) { body, body * { transition: background-color .18s ease, color .18s ease, border-color .18s ease; } }
+  </style>
+
 </head>
 <body class="min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
 
@@ -397,6 +420,12 @@
             <input type="text" id="edit-meal-name" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-950 border border-gray-800 text-white text-sm font-semibold focus:outline-none focus:border-emerald-500" />
           </div>
 
+          <div>
+            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Food description / portion details</label>
+            <textarea id="edit-meal-description" rows="2" placeholder="Describe ingredients and portion sizes to re-analyse" class="w-full px-3 py-2 rounded-xl bg-gray-950 border border-gray-800 text-white text-xs"></textarea>
+            <button type="button" onclick="reanalyzeEditedMeal()" class="mt-2 w-full py-2 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-300 text-xs font-bold">✨ Re-describe & Re-analyse with AI</button>
+            <div id="edit-meal-photos" class="flex flex-wrap gap-2 mt-2"></div>
+          </div>
           <!-- Quick Portion Scale Helpers -->
           <div>
             <div class="flex items-center justify-between mb-1">
@@ -687,7 +716,7 @@
         </div>
         <div class="flex items-center gap-2">
           <label for="log-date-picker" class="text-xs text-gray-400 font-semibold shrink-0">📅 Date</label>
-          <input id="log-date-picker" type="date" class="flex-1 min-w-0 px-3 py-2 rounded-xl bg-gray-950 border border-gray-700 text-white text-sm" onchange="selectCalendarDate(this.value)" />
+          <input id="log-date-picker" type="date" max="" class="flex-1 min-w-0 px-3 py-2 rounded-xl bg-gray-950 border border-gray-700 text-white text-sm" onchange="selectCalendarDate(this.value)" />
           <button type="button" onclick="jumpToTodayDate(); syncLogDatePicker()" class="px-3 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold">Today</button>
         </div>
         <p class="text-[11px] text-gray-500">Choose a past date to add, edit or delete meals for that day.</p>
@@ -741,7 +770,7 @@
         <div id="panel-photo" class="space-y-4">
           <div class="space-y-3">
             <label for="meal-photo-input" class="block cursor-pointer border-2 border-dashed border-gray-700 hover:border-emerald-500/60 bg-gray-950/70 rounded-2xl p-5 text-center transition">
-              <input type="file" id="meal-photo-input" accept="image/*" capture="environment" class="hidden" onchange="handlePhotoSelected(event)" />
+              <input type="file" id="meal-photo-input" accept="image/*" multiple class="hidden" onchange="handlePhotoSelected(event)" />
               <div id="photo-placeholder">
                 <div class="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center mx-auto mb-2">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
@@ -749,7 +778,7 @@
                 <p class="text-sm font-bold text-white">Tap to Snap or Upload Plate Photo</p>
                 <p class="text-xs text-gray-400 mt-1">Thali, Roti, Dal, Paneer, Chicken, Rice, Eggs</p>
               </div>
-              <img id="photo-preview" src="" alt="Meal preview" class="hidden max-h-52 mx-auto rounded-xl object-cover shadow-md" />
+              <div id="photo-preview-gallery" class="hidden flex flex-wrap gap-2 justify-center mt-2"></div><p class="text-[10px] text-gray-500 mt-2">You can select up to 4 photos of the same meal.</p>
             </label>
 
             <input type="text" id="photo-context-hint" placeholder="Optional hint (e.g. '2 chapatis with ghee, 150g paneer bhurji')" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-950 border border-gray-800 text-white text-xs focus:outline-none focus:border-emerald-500" />
@@ -1048,7 +1077,7 @@
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-1.5">
               <button type="button" onclick="changeSelectedDate(-1)" class="px-2 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-bold text-gray-300">‹</button>
-              <input type="date" id="workout-date-picker" onchange="jumpToWorkoutDate(this.value)" class="px-2.5 py-1 rounded-lg bg-gray-900 border border-gray-700 text-xs font-bold text-white focus:outline-none focus:border-amber-500" />
+              <input type="date" id="workout-date-picker" max="" onchange="jumpToWorkoutDate(this.value)" class="px-2.5 py-1 rounded-lg bg-gray-900 border border-gray-700 text-xs font-bold text-white focus:outline-none focus:border-amber-500" />
               <button type="button" onclick="changeSelectedDate(1)" class="px-2 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-bold text-gray-300">›</button>
             </div>
             <button type="button" onclick="toggleWorkoutHistoryBrowser()" id="workout-history-toggle-btn" class="px-2.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 text-amber-300 text-[11px] font-bold transition">
@@ -1135,12 +1164,31 @@
       <!-- Saved Workout History for Selected Date -->
       <div id="workout-saved-history" class="space-y-2"></div>
 
+      <section class="bg-gray-900 border border-gray-800 rounded-3xl p-4 space-y-2"><div><span class="text-[10px] font-bold uppercase tracking-wider text-amber-400">Progressive Overload</span><h3 class="text-sm font-extrabold text-white">Recent Exercise Progress</h3></div><div id="workout-progression-tracker" class="space-y-2"></div></section>
       <!-- Personal Records (PR) & Strength Progress Analyzer -->
       <div id="workout-pr-analyzer" class="bg-gray-900 border border-gray-800 rounded-3xl p-4 space-y-3"></div>
+      <!-- Workout Analytics -->
+      <section class="bg-gray-900 border border-gray-800 rounded-3xl p-4 space-y-3">
+        <div class="flex items-center justify-between gap-2"><div><span class="text-[10px] font-bold uppercase tracking-wider text-sky-400">Training Analytics</span><h3 class="text-sm font-extrabold text-white">Total Training Volume</h3></div><select id="workout-volume-range" onchange="renderWorkoutInsights()" class="bg-gray-950 border border-gray-700 rounded-lg px-2 py-1.5 text-xs text-white"><option value="day">Day</option><option value="week" selected>Week</option><option value="month">Month</option></select></div>
+        <div class="grid grid-cols-2 gap-2"><div class="bg-gray-950 rounded-xl p-3"><div class="text-[10px] text-gray-400">Total Volume</div><div id="workout-volume-total" class="text-lg font-extrabold text-sky-300">0 kg</div></div><div class="bg-gray-950 rounded-xl p-3"><div class="text-[10px] text-gray-400">Completed Sets</div><div id="workout-volume-sets" class="text-lg font-extrabold text-emerald-300">0</div></div></div>
+        <div id="workout-volume-chart" class="min-h-[150px]" aria-label="Workout volume bar chart"></div><p class="text-[10px] text-gray-500">Volume = weight (kg) × reps, using completed sets with valid weight and rep entries. Bodyweight-only sets are excluded.</p>
+        <div id="workout-muscle-volume" class="space-y-1"></div>
+      </section>
+      <section class="bg-gray-900 border border-gray-800 rounded-3xl p-4 space-y-3"><div><span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Consistency</span><h3 class="text-sm font-extrabold text-white">Workout Calendar</h3></div><div id="workout-consistency-calendar" class="grid grid-cols-7 gap-1 text-center"></div><p class="text-[10px] text-gray-500">Days with a saved workout are highlighted. Rest days are not treated as missed workouts.</p></section>
+      <section class="bg-gray-900 border border-gray-800 rounded-3xl p-4 space-y-3"><div><span class="text-[10px] font-bold uppercase tracking-wider text-violet-400">AI Coach</span><h3 class="text-sm font-extrabold text-white">Weekly Fitness Review</h3></div><p class="text-xs text-gray-400">Get a review of your logged training, volume trends, consistency and possible next steps.</p><button type="button" onclick="generateWorkoutWeeklyReview()" id="workout-ai-review-btn" class="w-full py-2.5 rounded-xl bg-violet-500/20 border border-violet-500/40 text-violet-200 text-xs font-bold">✨ Generate AI Weekly Review</button><div id="workout-ai-review" class="text-xs text-gray-300 space-y-2"></div></section>
     </main>
 
     <!-- TAB 4: PROFILE & COACH STATS -->
     <main id="tab-profile" class="hidden p-4 space-y-4">
+      <section class="theme-settings-card bg-gray-900 border border-gray-800 rounded-3xl p-4 space-y-3">
+        <div class="flex items-center justify-between gap-3"><div><h3 class="text-sm font-extrabold text-white">Appearance</h3><p class="text-xs text-gray-400 mt-1">Choose how FitCoach AI looks.</p></div><span id="theme-mode-status" class="text-[10px] font-bold text-emerald-400">AUTO</span></div>
+        <div class="grid grid-cols-3 gap-2" role="group" aria-label="Theme preference">
+          <button type="button" data-theme-choice="light" onclick="setThemePreference('light')" class="theme-choice rounded-xl border border-gray-700 bg-gray-800 px-2 py-2.5 text-xs font-bold text-white">☀️ Light</button>
+          <button type="button" data-theme-choice="dark" onclick="setThemePreference('dark')" class="theme-choice rounded-xl border border-gray-700 bg-gray-800 px-2 py-2.5 text-xs font-bold text-white">🌙 Dark</button>
+          <button type="button" data-theme-choice="auto" onclick="setThemePreference('auto')" class="theme-choice rounded-xl border border-emerald-500 bg-emerald-500/15 px-2 py-2.5 text-xs font-bold text-emerald-300">◐ Auto</button>
+        </div>
+        <p class="text-[11px] text-gray-500">Auto switches to light from 6:00 AM to 5:59 PM and dark from 6:00 PM to 5:59 AM, using your device's local time.</p>
+      </section>
       <div class="bg-gray-900 border border-gray-800 rounded-3xl p-5">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
@@ -1386,6 +1434,49 @@
     const DAYS_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
 
+    // --- THEME PREFERENCE: manual Light/Dark or automatic local-time switching ---
+    const THEME_STORAGE_KEY = 'fitcoach-theme-preference';
+    let themeBoundaryTimer = null;
+    function getThemePreference() {
+      try { return localStorage.getItem(THEME_STORAGE_KEY) || 'auto'; } catch (_) { return 'auto'; }
+    }
+    function resolveTheme(preference) {
+      if (preference === 'light' || preference === 'dark') return preference;
+      const hour = new Date().getHours();
+      return hour >= 6 && hour < 18 ? 'light' : 'dark';
+    }
+    function applyTheme(preference = getThemePreference()) {
+      const resolved = resolveTheme(preference);
+      document.documentElement.dataset.theme = resolved;
+      document.documentElement.classList.toggle('dark', resolved === 'dark');
+      document.documentElement.classList.toggle('light', resolved === 'light');
+      const metaTheme = document.querySelector('meta[name="theme-color"]');
+      if (metaTheme) metaTheme.setAttribute('content', resolved === 'dark' ? '#090d16' : '#f4f7f5');
+      const status = document.getElementById('theme-mode-status');
+      if (status) status.textContent = preference.toUpperCase() + (preference === 'auto' ? ' · ' + resolved.toUpperCase() : '');
+      document.querySelectorAll('[data-theme-choice]').forEach(btn => {
+        const active = btn.dataset.themeChoice === preference;
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        btn.classList.toggle('border-emerald-500', active);
+      });
+      if (themeBoundaryTimer) clearTimeout(themeBoundaryTimer);
+      if (preference === 'auto') {
+        const now = new Date();
+        const next = new Date(now);
+        next.setHours(now.getHours() < 6 ? 6 : now.getHours() < 18 ? 18 : 30, 0, 0, 0);
+        themeBoundaryTimer = setTimeout(() => applyTheme('auto'), Math.max(1000, next.getTime() - now.getTime() + 250));
+      }
+    }
+    window.setThemePreference = function(preference) {
+      if (!['light', 'dark', 'auto'].includes(preference)) return;
+      try { localStorage.setItem(THEME_STORAGE_KEY, preference); } catch (_) {}
+      applyTheme(preference);
+      if (typeof showToast === 'function') showToast('Appearance set to ' + preference + '.', 'success');
+    };
+    window.addEventListener('focus', () => applyTheme());
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) applyTheme(); });
+    applyTheme();
+
     let db = null;
     let auth = null;
     let currentUser = null;
@@ -1422,6 +1513,8 @@
     let unsubscribeMeals = null;
     let selectedPhotoBase64 = null;
     let selectedPhotoMime = 'image/jpeg';
+    let selectedMealPhotos = [];
+    let editingMealSource = null;
     let selectedLabelBase64 = null;
     let selectedLabelMime = 'image/jpeg';
     let servingMultiplier = 1;
@@ -1516,7 +1609,7 @@
     };
 
     window.selectCalendarDate = function(ymd) {
-      if (!ymd) return;
+      if (!ymd || ymd > getTodayDateStr()) { showToast('Food and workout logs are limited to today or earlier.', 'info'); return; }
       selectedDateStr = ymd;
       loadDraftForWorkoutDay();
       renderDashboard();
@@ -1528,7 +1621,7 @@
     window.syncLogDatePicker = function() {
       const picker = document.getElementById('log-date-picker');
       const label = document.getElementById('log-selected-date-label');
-      if (picker) picker.value = selectedDateStr;
+      if (picker) { picker.max = getTodayDateStr(); picker.value = selectedDateStr; }
       if (label) {
         const d = parseYMD(selectedDateStr);
         label.textContent = selectedDateStr === getTodayDateStr()
@@ -1560,16 +1653,19 @@
         const ymd = formatDateYMD(dObj);
         const isSelected = ymd === selectedDateStr;
         const isToday = ymd === todayStr;
+        const isFuture = ymd > todayStr;
         const hasMeals = mealDatesSet.has(ymd);
 
-        const cls = isSelected
+        const cls = isFuture
+          ? 'bg-gray-950 text-gray-700 border-gray-900 opacity-35 cursor-not-allowed'
+          : isSelected
           ? 'bg-emerald-500 text-gray-950 font-extrabold border-emerald-400'
           : isToday
           ? 'bg-gray-800 text-amber-300 font-bold border-amber-500/40'
           : 'bg-gray-950 text-gray-300 hover:bg-gray-800 border-gray-800/80';
 
         html += `
-          <button type="button" onclick="selectCalendarDate('${ymd}')" class="relative h-8 rounded-lg border text-xs flex flex-col items-center justify-center transition ${cls}">
+          <button type="button" ${isFuture ? 'disabled aria-disabled=\"true\"' : ''} onclick="selectCalendarDate('${ymd}')" class="relative h-8 rounded-lg border text-xs flex flex-col items-center justify-center transition ${cls}">
             <span>${day}</span>
             ${hasMeals ? `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-gray-950' : 'bg-emerald-400'} mt-0.5"></span>` : ''}
           </button>
@@ -1580,7 +1676,7 @@
     }
 
     window.jumpToWorkoutDate = function(ymd) {
-      if (!ymd) return;
+      if (!ymd || ymd > getTodayDateStr()) { showToast('Future dates are disabled.', 'info'); return; }
       selectedDateStr = ymd;
       loadDraftForWorkoutDay();
       renderDashboard();
@@ -2407,10 +2503,11 @@
       renderWorkoutLogTab();
     }
 
-    async function addMealEntry({ name, mealSlot = null, calories, protein, carbs, fats }) {
+    async function addMealEntry({ name, mealSlot = null, calories, protein, carbs, fats, description = '', photos = [] }) {
+      if (selectedDateStr > getTodayDateStr()) { showToast('You can only log food for today or previous dates.', 'error'); return; }
       const now = new Date();
       const entry = {
-        name,
+        name, description, photos,
         mealSlot: mealSlot || selectedMealSlot,
         date: selectedDateStr,
         time: now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
@@ -2583,6 +2680,7 @@
     window.changeSelectedDate = function(deltaDays) {
       const d = parseYMD(selectedDateStr);
       d.setDate(d.getDate() + deltaDays);
+      if (formatDateYMD(d) > getTodayDateStr()) return;
       selectedDateStr = formatDateYMD(d);
       foodCalYear = d.getFullYear();
       foodCalMonth = d.getMonth();
@@ -2762,6 +2860,7 @@
                 <h4 class="text-sm font-bold text-white truncate">${escapeHtml(meal.name)}</h4>
                 ${timeLabel ? `<span class="text-[10px] text-gray-500 shrink-0">${timeLabel}</span>` : ''}
               </div>
+              ${Array.isArray(meal.photos) && meal.photos.length ? `<div class=\"flex gap-1.5 overflow-x-auto mt-2\">${meal.photos.slice(0,4).map(src => `<img src=\"${src}\" alt=\"Logged food photo\" class=\"w-14 h-14 rounded-lg object-cover border border-gray-700\" />`).join('')}</div>` : ''}
               <div class="flex flex-wrap items-center gap-2 mt-1.5 text-[11px] font-semibold">
                 <span class="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300">${Math.round(meal.calories)} kcal</span>
                 <span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300">${Math.round(meal.protein)}g P</span>
@@ -2921,7 +3020,7 @@
     const ALL_MUSCLE_GROUPS = Object.keys(MUSCLE_EXERCISE_BANK);
 
     function createExerciseRowFromTemplate(tpl) {
-      const setCount = Math.max(1, Number(tpl.suggestedSets) || 3);
+      const setCount = 1;
       const sets = Array.from({ length: setCount }, () => ({
         weightKg: tpl.defaultWeight || '',
         reps: tpl.defaultReps || ''
@@ -2929,7 +3028,7 @@
       return {
         name: tpl.name,
         muscleGroup: tpl.muscleGroup || '',
-        suggested: `${setCount} x ${tpl.defaultReps || '10-12'}`,
+        suggested: `${Number(tpl.suggestedSets) || 3} target sets • ${tpl.defaultReps || '10-12'} reps`,
         sets
       };
     }
@@ -2942,7 +3041,8 @@
           suggested: rawEx.suggested || `${rawEx.sets.length} sets`,
           sets: rawEx.sets.map(s => ({
             weightKg: String(s.weightKg ?? ''),
-            reps: String(s.reps ?? '')
+            reps: String(s.reps ?? ''),
+            logged: s.logged === true
           }))
         };
       }
@@ -3043,7 +3143,13 @@
 
     window.updateWorkoutRowName = function(exIdx, value) {
       if (!draftWorkoutRows[exIdx]) return;
+      if (value === '__custom__') { draftWorkoutRows[exIdx].name = 'Custom Exercise'; renderWorkoutLogTab(); return; }
       draftWorkoutRows[exIdx].name = value;
+      const tpl = (MUSCLE_EXERCISE_BANK[draftWorkoutRows[exIdx].muscleGroup]||[]).find(t=>t.name===value);
+      if(tpl) draftWorkoutRows[exIdx].suggested = `${tpl.suggestedSets} target sets • ${tpl.defaultReps} reps`;
+    };
+    window.updateWorkoutRowMuscle = function(exIdx, muscle) {
+      const row=draftWorkoutRows[exIdx]; if(!row) return; row.muscleGroup=muscle; row.name=(MUSCLE_EXERCISE_BANK[muscle]||[])[0]?.name||'Custom Exercise'; renderWorkoutLogTab();
     };
 
     window.updateWorkoutSetField = function(exIdx, setIdx, field, value) {
@@ -3058,6 +3164,10 @@
       const lastSet = ex.sets[ex.sets.length - 1] || { weightKg: '', reps: '' };
       ex.sets.push({ weightKg: lastSet.weightKg, reps: lastSet.reps });
       renderWorkoutLogTab();
+    };
+
+    window.markWorkoutSetLogged = function(exIdx, setIdx) {
+      const ex=draftWorkoutRows[exIdx]; if(!ex?.sets?.[setIdx]) return; ex.sets[setIdx].logged=true; setRestPreset(restTimerPreset); toggleRestTimer(); renderWorkoutLogTab(); showToast('Set logged — rest timer started.', 'success');
     };
 
     window.deleteSetFromExercise = function(exIdx, setIdx) {
@@ -3082,12 +3192,8 @@
       draftWorkoutRows.push({
         name: 'Custom Exercise',
         muscleGroup: defaultMuscle,
-        suggested: '3 sets',
-        sets: [
-          { weightKg: '', reps: '' },
-          { weightKg: '', reps: '' },
-          { weightKg: '', reps: '' }
-        ]
+        suggested: 'Custom exercise',
+        sets: [{ weightKg: '', reps: '', logged: false }]
       });
       renderWorkoutLogTab();
     };
@@ -3233,7 +3339,11 @@
       const meal = allMeals.find(m => m.id === mealId);
       if (!meal) return;
       editingMealId = mealId;
+      editingMealSource = meal;
       document.getElementById('edit-meal-name').value = meal.name || '';
+      document.getElementById('edit-meal-description').value = meal.description || meal.name || '';
+      const photoBox = document.getElementById('edit-meal-photos');
+      photoBox.innerHTML = (meal.photos || []).map(src => `<img src="${src}" class="w-16 h-16 object-cover rounded-lg border border-gray-700" alt="Saved meal photo"/>`).join('');
       document.getElementById('edit-meal-cal').value = Math.round(meal.calories || 0);
       document.getElementById('edit-meal-pro').value = Math.round(meal.protein || 0);
       document.getElementById('edit-meal-carb').value = Math.round(meal.carbs || 0);
@@ -3246,6 +3356,7 @@
 
     window.closeEditMealModal = function() {
       editingMealId = null;
+      editingMealSource = null;
       const modal = document.getElementById('edit-meal-modal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
@@ -3263,10 +3374,32 @@
       fatEl.value = Math.round((parseFloat(fatEl.value) || 0) * factor);
     };
 
+    window.reanalyzeEditedMeal = async function() {
+      if (!editingMealId || !editingMealSource) return;
+      const description = document.getElementById('edit-meal-description').value.trim();
+      if (!description) { showToast('Add a food description or portion details first.', 'info'); return; }
+      const btn = document.querySelector('#edit-meal-modal button[onclick="reanalyzeEditedMeal()"]');
+      if (btn) { btn.disabled = true; btn.textContent = 'Analysing…'; }
+      try {
+        const parts = [{text:`Estimate Indian meal nutrition from this updated description: ${description}. Reconsider the saved meal photos too if available. Give totals and item breakdown; use realistic portion estimates.`}];
+        (editingMealSource.photos || []).slice(0,4).forEach(src => { const m=src.match(/^data:(image\/[^;]+);base64,(.+)$/); if(m) parts.push({inlineData:{mimeType:m[1],data:m[2]}}); });
+        const data = await callGeminiJson(parts, MEAL_ANALYSIS_SCHEMA);
+        document.getElementById('edit-meal-name').value = data.mealName || document.getElementById('edit-meal-name').value;
+        document.getElementById('edit-meal-cal').value = Math.round(data.totalCalories || 0);
+        document.getElementById('edit-meal-pro').value = Math.round(data.totalProtein || 0);
+        document.getElementById('edit-meal-carb').value = Math.round(data.totalCarbs || 0);
+        document.getElementById('edit-meal-fat').value = Math.round(data.totalFats || 0);
+        showToast('Updated AI estimates loaded. Review and Save Changes.', 'success');
+      } catch(e) { showToast(e.message || 'Could not re-analyse this meal.', 'error'); }
+      finally { if(btn) {btn.disabled=false; btn.textContent='✨ Re-describe & Re-analyse with AI';} }
+    };
+
     window.saveEditedMeal = async function() {
       if (!editingMealId) return;
       const updatedFields = {
         name: document.getElementById('edit-meal-name').value.trim() || 'Logged Meal',
+        description: document.getElementById('edit-meal-description').value.trim(),
+        photos: editingMealSource?.photos || [],
         calories: Math.round(parseFloat(document.getElementById('edit-meal-cal').value) || 0),
         protein: Math.round(parseFloat(document.getElementById('edit-meal-pro').value) || 0),
         carbs: Math.round(parseFloat(document.getElementById('edit-meal-carb').value) || 0),
@@ -3328,7 +3461,7 @@
         img.onerror = () => onError(new Error('This image format could not be opened. Try a JPG or PNG.'));
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          const maxDim = 900;
+          const maxDim = 760;
           let w = img.width;
           let h = img.height;
           if (w > maxDim || h > maxDim) {
@@ -3344,7 +3477,7 @@
           canvas.height = h;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, w, h);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
           onReady(dataUrl, dataUrl.split(',')[1], 'image/jpeg');
         };
         img.src = e.target.result;
@@ -3353,23 +3486,30 @@
     }
 
     window.handlePhotoSelected = function(event) {
-      const file = event.target.files?.[0];
-      if (!file) return;
+      const files = Array.from(event.target.files || []).filter(f => f.type?.startsWith('image/')).slice(0, 4);
+      if (!files.length) return;
+      selectedMealPhotos = [];
       selectedPhotoBase64 = null;
       const analyzeBtn = document.getElementById('analyze-photo-btn');
       analyzeBtn.disabled = true;
-      compressImageFile(file, (dataUrl, base64, mime) => {
-        selectedPhotoBase64 = base64;
-        selectedPhotoMime = mime;
-        const preview = document.getElementById('photo-preview');
-        preview.src = dataUrl;
-        preview.classList.remove('hidden');
-        document.getElementById('photo-placeholder').classList.add('hidden');
-        analyzeBtn.disabled = false;
-      }, (err) => {
-        showToast(err.message || 'Unable to load this photo.', 'error');
-        event.target.value = '';
-      });
+      const gallery = document.getElementById('photo-preview-gallery');
+      gallery.innerHTML = '';
+      gallery.classList.remove('hidden');
+      let completed = 0;
+      files.forEach(file => compressImageFile(file, (dataUrl, base64, mime) => {
+        selectedMealPhotos.push({ dataUrl, base64, mime });
+        completed++;
+        const img = document.createElement('img');
+        img.src = dataUrl; img.alt = 'Selected meal photo';
+        img.className = 'w-20 h-20 rounded-xl object-cover border border-gray-700';
+        gallery.appendChild(img);
+        if (completed === files.length) {
+          selectedPhotoBase64 = selectedMealPhotos[0]?.base64 || null;
+          selectedPhotoMime = selectedMealPhotos[0]?.mime || 'image/jpeg';
+          document.getElementById('photo-placeholder').classList.add('hidden');
+          analyzeBtn.disabled = !selectedPhotoBase64;
+        }
+      }, err => showToast(err.message || 'Unable to load a photo.', 'error')));
     };
 
     const LABEL_SCHEMA = {
@@ -3854,10 +3994,8 @@
 Break down each visible food item with estimated portion, calories, protein (g), carbs (g), and fats (g), sum the totals accurately, and give 1-2 sentences of practical coaching feedback for ${userProfile.name} (goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.proteinGrams}g). Return strictly valid JSON.`;
 
       try {
-        const data = await callGeminiJson([
-          { text: prompt },
-          { inlineData: { mimeType: selectedPhotoMime, data: selectedPhotoBase64 } }
-        ], MEAL_ANALYSIS_SCHEMA);
+        const photoParts = (selectedMealPhotos.length ? selectedMealPhotos : [{base64:selectedPhotoBase64,mime:selectedPhotoMime}]).slice(0,4).map(ph => ({ inlineData: { mimeType: ph.mime || 'image/jpeg', data: ph.base64 } }));
+      const data = await callGeminiJson([{ text: prompt }, ...photoParts], MEAL_ANALYSIS_SCHEMA);
         openAiReviewCard(data);
         showToast('Plate analyzed! Review & tap Confirm.', 'success');
       } catch (err) {
@@ -3947,6 +4085,7 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
     };
 
     window.confirmAiMealSave = async function(asShortcut = false) {
+      if (selectedDateStr > getTodayDateStr()) { showToast('Future dates cannot be logged.', 'error'); return; }
       const name = document.getElementById('rev-meal-name').value.trim() || 'Analyzed Meal';
       const calories = parseFloat(document.getElementById('rev-cal').value) || 0;
       const protein = parseFloat(document.getElementById('rev-pro').value) || 0;
@@ -3957,12 +4096,14 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
       if (asShortcut) {
         await addCustomShortcut({ name: displayName, calories, protein, carbs, fats });
       }
-      await addMealEntry({ name: displayName, calories, protein, carbs, fats });
+      await addMealEntry({ name: displayName, calories, protein, carbs, fats, description: document.getElementById('photo-context-hint')?.value || document.getElementById('meal-text-input')?.value || '', photos: selectedMealPhotos.map(p => p.dataUrl) });
       closeAiReview();
+      selectedMealPhotos = [];
       switchTab('dashboard');
     };
 
     window.saveManualMeal = async function(asShortcut = false) {
+      if (selectedDateStr > getTodayDateStr()) { showToast('Future dates cannot be logged.', 'error'); return; }
       const rawName = document.getElementById('man-name').value.trim();
       const cal = parseFloat(document.getElementById('man-cal').value);
       const pro = parseFloat(document.getElementById('man-pro').value) || 0;
@@ -4553,6 +4694,77 @@ For each meal, provide a realistic meal title, Indian ingredients/food descripti
       `;
     }
 
+    function getWorkoutSetVolume(ex) {
+      let total = 0, sets = 0;
+      normalizeExerciseRow(ex).sets.forEach(st => {
+        if (st.logged === false) return;
+        const w = parseFloat(String(st.weightKg || '').replace(/[^0-9.]/g,''));
+        const r = parseFloat(String(st.reps || '').replace(/[^0-9.]/g,''));
+        if (w > 0 && r > 0) { total += w*r; sets++; }
+      });
+      return { total, sets };
+    }
+    function workoutDateInRange(dateKey, mode) {
+      const d = parseYMD(dateKey), selected = parseYMD(selectedDateStr);
+      if (mode === 'day') return dateKey === selectedDateStr;
+      if (mode === 'month') return d.getFullYear() === selected.getFullYear() && d.getMonth() === selected.getMonth();
+      const start = new Date(selected); start.setDate(start.getDate() - ((start.getDay()+6)%7));
+      const end = new Date(start); end.setDate(start.getDate()+6);
+      return d >= start && d <= end;
+    }
+    function renderWorkoutInsights() {
+      const mode = document.getElementById('workout-volume-range')?.value || 'week';
+      const dates = Object.keys(workoutLogsByDate || {}).filter(d => workoutDateInRange(d, mode)).sort();
+      const daily = {}, muscle = {}; let total=0, sets=0;
+      dates.forEach(date => (workoutLogsByDate[date].exercises || []).forEach(ex => {
+        const v=getWorkoutSetVolume(ex); total+=v.total; sets+=v.sets;
+        daily[date]=(daily[date]||0)+v.total;
+        if(v.total>0) muscle[ex.muscleGroup||'Other']=(muscle[ex.muscleGroup||'Other']||0)+v.total;
+      }));
+      const totalEl=document.getElementById('workout-volume-total'), setsEl=document.getElementById('workout-volume-sets');
+      if(totalEl) totalEl.textContent=`${Math.round(total).toLocaleString('en-IN')} kg`;
+      if(setsEl) setsEl.textContent=sets;
+      const chart=document.getElementById('workout-volume-chart');
+      if(chart) {
+        let labels=[];
+        if(mode==='day') labels=[selectedDateStr];
+        else if(mode==='week') { const st=parseYMD(selectedDateStr); st.setDate(st.getDate()-((st.getDay()+6)%7)); labels=Array.from({length:7},(_,i)=>{const x=new Date(st);x.setDate(st.getDate()+i);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;}); }
+        else { const st=parseYMD(selectedDateStr); const n=new Date(st.getFullYear(),st.getMonth()+1,0).getDate(); labels=Array.from({length:n},(_,i)=>`${st.getFullYear()}-${String(st.getMonth()+1).padStart(2,'0')}-${String(i+1).padStart(2,'0')}`); }
+        const vals=labels.map(d=>daily[d]||0), max=Math.max(1,...vals);
+        chart.innerHTML=vals.some(v=>v>0)?`<div class="flex items-end gap-1 h-36 border-b border-gray-700 px-1">${vals.map((v,i)=>`<div class="flex-1 min-w-0 h-full flex flex-col justify-end items-center gap-1"><span class="text-[8px] text-gray-400">${v?Math.round(v/100)/10+'k':''}</span><div title="${labels[i]}: ${Math.round(v)} kg" class="w-full max-w-8 rounded-t bg-sky-400/80" style="height:${Math.max(v?3:0,v/max*92)}%"></div><span class="text-[8px] text-gray-500">${mode==='month'?String(i+1):parseYMD(labels[i]).toLocaleDateString('en-IN',{weekday:'short'}).slice(0,2)}</span></div>`).join('')}</div>`:'<p class="text-xs text-gray-500 py-8 text-center">No completed weighted sets in this period yet.</p>';
+      }
+      const mEl=document.getElementById('workout-muscle-volume');
+      if(mEl) mEl.innerHTML=Object.entries(muscle).sort((a,b)=>b[1]-a[1]).map(([m,v])=>`<div class="flex justify-between text-[11px]"><span class="text-gray-300">${escapeHtml(m)}</span><strong class="text-sky-300">${Math.round(v).toLocaleString('en-IN')} kg</strong></div>`).join('') || '<p class="text-[11px] text-gray-500">Muscle-group totals will appear after completed sets are saved.</p>';
+      const prog=document.getElementById('workout-progression-tracker');
+      if(prog) {
+        const byExercise={};
+        Object.keys(workoutLogsByDate||{}).sort().forEach(date=>(workoutLogsByDate[date].exercises||[]).forEach(ex=>{
+          const name=(ex.name||'Exercise').trim(), key=name.toLowerCase();
+          const sets=normalizeExerciseRow(ex).sets.filter(st=>st.weightKg!==''&&st.reps!==''&&st.logged!==false).map(st=>({w:parseFloat(String(st.weightKg).replace(/[^0-9.]/g,'')),r:parseFloat(String(st.reps).replace(/[^0-9.]/g,''))})).filter(x=>x.w>0&&x.r>0);
+          if(!sets.length)return;
+          const volume=sets.reduce((a,x)=>a+x.w*x.r,0), bestWeight=Math.max(...sets.map(x=>x.w));
+          (byExercise[key] ||= {name,sessions:[]}).sessions.push({date,volume,bestWeight});
+        }));
+        const rows=Object.values(byExercise).filter(x=>x.sessions.length>=2).map(x=>{const a=x.sessions[x.sessions.length-2],b=x.sessions[x.sessions.length-1];return {...x,previous:a,current:b,delta:b.volume-a.volume,pct:a.volume?Math.round((b.volume-a.volume)/a.volume*100):0};}).sort((a,b)=>b.current.date.localeCompare(a.current.date)).slice(0,5);
+        prog.innerHTML=rows.length?rows.map(x=>`<div class="bg-gray-950 rounded-xl p-2.5 flex items-center justify-between gap-2"><div class="min-w-0"><div class="text-xs font-bold text-white truncate">${escapeHtml(x.name)}</div><div class="text-[10px] text-gray-500">${x.previous.date} → ${x.current.date}</div></div><div class="text-right shrink-0"><div class="text-xs font-extrabold ${x.delta>=0?'text-emerald-300':'text-amber-300'}">${x.delta>=0?'+':''}${Math.round(x.delta).toLocaleString('en-IN')} kg</div><div class="text-[9px] text-gray-500">${x.pct>=0?'+':''}${x.pct}% volume</div></div></div>`).join(''):'<p class="text-[11px] text-gray-500">Log the same exercise in at least two sessions to see your training-volume trend.</p>';
+      }
+      const cal=document.getElementById('workout-consistency-calendar');
+      if(cal) { const today=parseYMD(selectedDateStr), start=new Date(today.getFullYear(),today.getMonth(),1), offset=(start.getDay()+6)%7, days=new Date(today.getFullYear(),today.getMonth()+1,0).getDate(); const cells=['M','T','W','T','F','S','S'].map(x=>`<span class="text-[9px] text-gray-500 py-1">${x}</span>`); for(let i=0;i<offset;i++)cells.push('<span></span>'); for(let day=1;day<=days;day++){const dt=new Date(today.getFullYear(),today.getMonth(),day), key=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`, done=!!(workoutLogsByDate[key]?.exercises?.length); cells.push(`<button type="button" ${key>getTodayDateStr()?'disabled':''} onclick="jumpToWorkoutDate('${key}')" class="rounded-lg py-1.5 text-[10px] ${done?'bg-emerald-500/25 text-emerald-300 border border-emerald-500/40':'bg-gray-950 text-gray-400 border border-gray-800'} ${key===selectedDateStr?'ring-1 ring-amber-400':''} ${key>getTodayDateStr()?'opacity-20':''}">${day}</button>`);} cal.innerHTML=cells.join(''); }
+    }
+    window.generateWorkoutWeeklyReview = async function() {
+      const btn=document.getElementById('workout-ai-review-btn'), out=document.getElementById('workout-ai-review');
+      const end=parseYMD(selectedDateStr), start=new Date(end); start.setDate(start.getDate()-6);
+      const startKey=`${start.getFullYear()}-${String(start.getMonth()+1).padStart(2,'0')}-${String(start.getDate()).padStart(2,'0')}`;
+      const sessions=Object.entries(workoutLogsByDate).filter(([d])=>d>=startKey&&d<=selectedDateStr).map(([date,log])=>({date,muscles:log.selectedMuscles||[],exercises:(log.exercises||[]).map(ex=>({name:ex.name,muscleGroup:ex.muscleGroup,sets:normalizeExerciseRow(ex).sets.map(st=>({weightKg:st.weightKg,reps:st.reps,completed:st.logged===true}))}))}));
+      if(!sessions.length){showToast('Log at least one workout in the selected week first.','info');return;}
+      if(btn){btn.disabled=true;btn.textContent='Reviewing your workouts…';}
+      if(out)out.textContent='Analysing your logged training data…';
+      try { const schema={type:'OBJECT',properties:{summary:{type:'STRING'},highlights:{type:'ARRAY',items:{type:'STRING'}},improvements:{type:'ARRAY',items:{type:'STRING'}},nextWeek:{type:'ARRAY',items:{type:'STRING'}}},required:['summary','highlights','improvements','nextWeek']};
+        const review=await callGeminiJson([{text:`Act as a careful fitness coach. Review only this user's logged workouts for the seven-day period ending ${selectedDateStr}. Do not invent data or diagnose. Note that missing logs do not prove missed workouts. Give realistic, safe suggestions and avoid recommending maximal lifts. Data: ${JSON.stringify(sessions)}`}],schema);
+        if(out)out.innerHTML=`<p class="font-semibold text-white">${escapeHtml(review.summary||'Weekly review')}</p>${[['Highlights',review.highlights],['Opportunities',review.improvements],['Next week',review.nextWeek]].map(([h,a])=>`<div><strong class="text-violet-300">${h}</strong><ul class="list-disc pl-4 mt-1 space-y-1">${(a||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`).join('')}`;
+      } catch(e){if(out)out.textContent=`Could not generate review: ${e.message}`;} finally {if(btn){btn.disabled=false;btn.textContent='✨ Generate AI Weekly Review';}}
+    };
+
     function renderWorkoutLogTab() {
       const dateEl = document.getElementById('workout-log-date-pill');
       const titleEl = document.getElementById('wlog-active-title');
@@ -4562,7 +4774,7 @@ For each meal, provide a realistic meal title, Indian ingredients/food descripti
       const pickerEl = document.getElementById('workout-date-picker');
       if (!listEl) return;
 
-      if (pickerEl) pickerEl.value = selectedDateStr;
+      if (pickerEl) { pickerEl.max = getTodayDateStr(); pickerEl.value = selectedDateStr; }
       const whBox = document.getElementById('workout-history-browser');
       if (whBox && !whBox.classList.contains('hidden')) {
         renderWorkoutHistoryBrowser();
@@ -4616,7 +4828,8 @@ For each meal, provide a realistic meal title, Indian ingredients/food descripti
             <span class="col-span-2 text-[11px] font-extrabold text-gray-400">Set ${setIdx + 1}</span>
             <input type="text" value="${escapeHtml(s.weightKg)}" oninput="updateWorkoutSetField(${exIdx}, ${setIdx}, 'weightKg', this.value)" placeholder="kg" class="col-span-4 bg-gray-900 border border-gray-800 rounded-lg px-2 py-1.5 text-xs font-extrabold text-white focus:border-emerald-500 focus:outline-none" />
             <input type="text" value="${escapeHtml(s.reps)}" oninput="updateWorkoutSetField(${exIdx}, ${setIdx}, 'reps', this.value)" placeholder="reps" class="col-span-4 bg-gray-900 border border-gray-800 rounded-lg px-2 py-1.5 text-xs font-extrabold text-emerald-400 focus:border-emerald-500 focus:outline-none" />
-            <button type="button" onclick="deleteSetFromExercise(${exIdx}, ${setIdx})" title="Delete Set" class="col-span-2 py-1.5 rounded-lg bg-gray-900 hover:bg-rose-500/20 text-gray-500 hover:text-rose-400 text-xs font-bold transition">✕</button>
+            <button type="button" onclick="markWorkoutSetLogged(${exIdx}, ${setIdx})" title="Log set and start rest" class="col-span-1 py-1.5 rounded-lg ${s.logged ? 'bg-emerald-500/20 text-emerald-300' : 'bg-gray-900 text-emerald-400'} text-xs">✓</button>
+            <button type="button" onclick="deleteSetFromExercise(${exIdx}, ${setIdx})" title="Delete Set" class="col-span-1 py-1.5 rounded-lg bg-gray-900 hover:bg-rose-500/20 text-gray-500 hover:text-rose-400 text-xs font-bold transition">✕</button>
           </div>
         `).join('');
 
@@ -4624,9 +4837,12 @@ For each meal, provide a realistic meal title, Indian ingredients/food descripti
           <div class="bg-gray-900 border border-gray-800 rounded-2xl p-3.5 space-y-2.5">
             <div class="flex items-start justify-between gap-2">
               <div class="min-w-0 flex-1">
-                <input type="text" value="${escapeHtml(row.name)}" onchange="updateWorkoutRowName(${exIdx}, this.value)" class="w-full bg-transparent text-sm font-bold text-white border-b border-transparent focus:border-emerald-500 focus:outline-none" />
+                <div class="grid grid-cols-2 gap-2">
+                  <select onchange="updateWorkoutRowMuscle(${exIdx}, this.value)" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-amber-300">${(selectedMusclesForDay.length ? selectedMusclesForDay : ALL_MUSCLE_GROUPS).map(m=>`<option value="${m}" ${m===row.muscleGroup?'selected':''}>${m}</option>`).join('')}</select>
+                  <select onchange="updateWorkoutRowName(${exIdx}, this.value)" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-white"><option value="__custom__">Custom exercise…</option>${(MUSCLE_EXERCISE_BANK[row.muscleGroup]||[]).map(t=>`<option value="${escapeHtml(t.name)}" ${t.name===row.name?'selected':''}>${escapeHtml(t.name)}</option>`).join('')}</select>
+                </div>
+                ${row.name==='Custom Exercise' || !((MUSCLE_EXERCISE_BANK[row.muscleGroup]||[]).some(t=>t.name===row.name)) ? `<input type="text" value="${escapeHtml(row.name==='Custom Exercise'?'':row.name)}" placeholder="Type custom exercise name" onchange="updateWorkoutRowName(${exIdx}, this.value)" class="w-full mt-1 bg-transparent text-sm font-bold text-white border-b border-gray-700 focus:border-emerald-500 focus:outline-none"/>` : ''}
                 <div class="flex items-center gap-2 mt-0.5">
-                  <span class="text-[10px] font-bold uppercase text-amber-300">${escapeHtml(row.muscleGroup || '')}</span>
                   <span class="text-[11px] text-gray-400">Target: <strong class="text-emerald-400">${escapeHtml(row.suggested || '')}</strong></span>
                 </div>
               </div>
@@ -4642,6 +4858,7 @@ For each meal, provide a realistic meal title, Indian ingredients/food descripti
 
             <div class="space-y-1.5">
               ${setsHtml}
+              <div class="flex items-center gap-2"><span class="text-[10px] text-gray-500">Rest after ✓ set</span><select onchange="setRestPreset(Number(this.value))" class="bg-gray-950 border border-gray-800 rounded-lg px-2 py-1 text-[10px] text-white"><option value="30" ${restTimerPreset===30?'selected':''}>30 sec</option><option value="60" ${restTimerPreset===60?'selected':''}>60 sec</option><option value="90" ${restTimerPreset===90?'selected':''}>90 sec</option><option value="120" ${restTimerPreset===120?'selected':''}>120 sec</option></select></div>
             </div>
           </div>
         `;
@@ -4677,6 +4894,7 @@ For each meal, provide a realistic meal title, Indian ingredients/food descripti
       }
 
       renderWorkoutPrAnalyzer();
+      renderWorkoutInsights();
     }
 
     window.copyAppLink = function() {
