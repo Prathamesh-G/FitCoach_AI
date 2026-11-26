@@ -424,6 +424,64 @@ html[data-theme="light"] #app-shell .mm-wordmark-header { color:#163329 !importa
 }
 @media(max-width:360px) { #app-shell .mm-wordmark-header { font-size:24px !important; } }
 </style>
+
+<style id="mettlemap-header-final-grid">
+/* Brand is a true two-column grid: icon never shares space with text or metadata. */
+#app-shell .mettlemap-header-brand {
+  display:grid !important; grid-template-columns:80px minmax(0,1fr) !important;
+  grid-template-rows:auto auto auto !important; column-gap:13px !important;
+  align-items:center !important; min-width:0 !important; width:100% !important;
+  max-width:none !important; flex:1 1 auto !important;
+}
+#app-shell .mettlemap-header-brand .mettlemap-brand-line { display:contents !important; }
+#app-shell .mettlemap-header-brand .mettlemap-header-icon {
+  grid-column:1 !important; grid-row:1 / 4 !important;
+  width:80px !important; height:80px !important; min-width:80px !important;
+  max-width:80px !important; max-height:80px !important;
+  padding:0 !important; margin:0 !important; flex:none !important;
+  object-fit:contain !important; border-radius:17px !important;
+  align-self:center !important;
+}
+#app-shell .mettlemap-header-brand .mm-wordmark-header {
+  grid-column:2 !important; grid-row:1 !important; margin:0 !important;
+  font-size:clamp(25px,3.5vw,40px) !important; line-height:1.04 !important;
+  white-space:nowrap !important; letter-spacing:-.045em !important;
+  min-width:0 !important; max-width:100% !important;
+}
+#app-shell .mettlemap-header-brand #header-day-badge {
+  grid-column:2 !important; grid-row:2 !important;
+  justify-self:start !important; margin:5px 0 0 !important;
+  font-size:11px !important; line-height:1.35 !important;
+  max-width:100% !important; white-space:normal !important;
+}
+#app-shell .mettlemap-header-brand #header-greeting {
+  grid-column:2 !important; grid-row:3 !important; margin:4px 0 0 !important;
+  font-size:11px !important; line-height:1.35 !important;
+  max-width:100% !important;
+}
+@media(max-width:680px) {
+  #app-shell .mettlemap-header-brand {
+    grid-template-columns:clamp(64px,21vw,80px) minmax(0,1fr) !important;
+    column-gap:10px !important;
+  }
+  #app-shell .mettlemap-header-brand .mettlemap-header-icon {
+    width:clamp(64px,21vw,80px) !important;
+    height:clamp(64px,21vw,80px) !important;
+    min-width:0 !important; max-width:80px !important;
+    max-height:80px !important;
+  }
+  #app-shell .mettlemap-header-brand .mm-wordmark-header {
+    font-size:clamp(23px,7.2vw,34px) !important;
+  }
+  #app-shell .mettlemap-header-brand #header-day-badge { font-size:10px !important; padding:3px 7px !important; }
+  #app-shell .mettlemap-header-brand #header-greeting { font-size:10px !important; }
+}
+@media(max-width:360px) {
+  #app-shell .mettlemap-header-brand { grid-template-columns:62px minmax(0,1fr) !important; column-gap:8px !important; }
+  #app-shell .mettlemap-header-brand .mettlemap-header-icon { width:62px !important; height:62px !important; }
+  #app-shell .mettlemap-header-brand .mm-wordmark-header { font-size:clamp(21px,7vw,25px) !important; }
+}
+</style>
 </head>
 <body class="min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
 
@@ -3200,7 +3258,7 @@ html[data-theme="light"] #app-shell .mm-wordmark-header { color:#163329 !importa
 
       document.getElementById('header-greeting').textContent = `Hey ${userProfile.name}, stay consistent!`;
       const badge = document.getElementById('header-day-badge');
-      badge.textContent = `${DAYS_SHORT[dayIdx].toUpperCase()} • ${getDietLabel(dietCode)}`;
+      badge.textContent = `${String(dObj.getDate()).padStart(2, '0')}/${String(dObj.getMonth() + 1).padStart(2, '0')}/${String(dObj.getFullYear()).slice(-2)} • ${DAYS_SHORT[dayIdx].toUpperCase()} • ${getDietLabel(dietCode)}`;
       badge.className = dietCode === 'veg'
         ? 'px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
         : dietCode === 'egg'
