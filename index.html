@@ -554,6 +554,24 @@ html[data-theme="light"] #app-shell {--mm-surface:#fff;--mm-inset:#edf4ef;--mm-e
 html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[class~="bg-teal-500"],[class~="bg-amber-500"],[class~="bg-orange-500"]):not(.theme-choice):not(.feedback-choice):not(.mult-btn):not([id^="log-mode-"]):not([id^="wh-range-"]):not([id^="slot-btn-"]):not(:disabled){background-color:#10b981!important;background-image:linear-gradient(100deg,#10b981,#a3e635)!important;color:#092c20!important;}
 </style>
 <style id="mm-meal-frequency-style">#app-shell .mm-meal-frequency{display:grid;gap:8px;min-width:0}#app-shell .mm-meal-frequency label{font-size:13px;font-weight:750;color:var(--mp-ink)}#app-shell #mm-meal-count{width:100%;min-height:46px;border:1px solid var(--mm-edge);border-radius:16px;padding:10px 14px;font-weight:700}#app-shell #mm-meal-count-note{font-size:12px;color:var(--mp-muted);line-height:1.5}</style>
+<style id="mettlemap-diet-preset-selection">
+html[data-theme] #onboarding-view button[data-diet-preset] {
+  border: 2px solid var(--diet-preset-edge) !important;
+  background: var(--diet-preset-bg) !important;
+  color: var(--diet-preset-text) !important;
+  box-shadow: none !important;
+  font-weight: 600 !important;
+}
+html[data-theme="light"] { --diet-preset-edge:#CBD8D1; --diet-preset-bg:#F0F5F2; --diet-preset-text:#34453D; --diet-active-edge:#087F55; --diet-active-bg:#DDF5E8; --diet-active-text:#075B38; }
+html[data-theme="dark"] { --diet-preset-edge:#3B4B58; --diet-preset-bg:#18242E; --diet-preset-text:#DCE7EB; --diet-active-edge:#A3E635; --diet-active-bg:#173B30; --diet-active-text:#BFF7D9; }
+html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] {
+  border-color:var(--diet-active-edge) !important;
+  background:var(--diet-active-bg) !important;
+  color:var(--diet-active-text) !important;
+  box-shadow:inset 0 0 0 1px var(--diet-active-edge), 0 0 0 2px var(--diet-active-edge) !important;
+  font-weight:800 !important;
+}
+</style>
 </head>
 <body class="min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
 
@@ -768,16 +786,16 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
 
         <!-- Quick Presets -->
         <div class="grid grid-cols-2 gap-2 mb-3">
-          <button type="button" onclick="applyDietPreset('mix43')" class="px-2.5 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold transition text-left">
+          <button type="button" onclick="applyDietPreset('mix43')" data-diet-preset="mix43" aria-pressed="false" class="px-2.5 py-2 rounded-xl border text-xs font-medium transition text-left">
             ★ Mon/Tue/Thu/Sat Veg
           </button>
-          <button type="button" onclick="applyDietPreset('veg')" class="px-2.5 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-xs font-medium transition text-left">
+          <button type="button" onclick="applyDietPreset('veg')" data-diet-preset="veg" aria-pressed="false" class="px-2.5 py-2 rounded-xl border text-xs font-medium transition text-left">
             🌱 Full Vegetarian
           </button>
-          <button type="button" onclick="applyDietPreset('egg')" class="px-2.5 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-xs font-medium transition text-left">
+          <button type="button" onclick="applyDietPreset('egg')" data-diet-preset="egg" aria-pressed="false" class="px-2.5 py-2 rounded-xl border text-xs font-medium transition text-left">
             🥚 Eggetarian (Veg + Eggs)
           </button>
-          <button type="button" onclick="applyDietPreset('nonveg')" class="px-2.5 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-xs font-medium transition text-left">
+          <button type="button" onclick="applyDietPreset('nonveg')" data-diet-preset="nonveg" aria-pressed="false" class="px-2.5 py-2 rounded-xl border text-xs font-medium transition text-left">
             🍗 All Days Non-Veg
           </button>
         </div>
@@ -2500,6 +2518,16 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
     function renderDayScheduleButtons() {
       const grid = document.getElementById('day-schedule-grid');
       if (!grid) return;
+      const presets = {
+        mix43: ['nonveg','veg','veg','nonveg','veg','nonveg','veg'],
+        veg: Array(7).fill('veg'),
+        egg: Array(7).fill('egg'),
+        nonveg: Array(7).fill('nonveg')
+      };
+      document.querySelectorAll('[data-diet-preset]').forEach(button => {
+        const schedule = presets[button.dataset.dietPreset];
+        button.setAttribute('aria-pressed', String(!!schedule && schedule.every((mode, day) => draftSchedule[day] === mode)));
+      });
       grid.innerHTML = '';
       WEEK_ORDER.forEach(dayIdx => {
         const mode = draftSchedule[dayIdx];
@@ -3019,11 +3047,11 @@ html[data-theme="light"] #app-shell main button:is([class~="bg-emerald-500"],[cl
         document.getElementById('inp-goal').value = userProfile.goal || 'recomp';
         document.getElementById('inp-activity').value = userProfile.activity || '1.55';
         draftSchedule = { ...(userProfile.schedule || draftSchedule) };
-        renderDayScheduleButtons();
         updateOnboardingLivePreview();
       } else {
         cancelBtn.classList.add('hidden');
       }
+      renderDayScheduleButtons();
 
       if (gate) {
         if (!isEditing && !firstLaunchGateDismissed) gate.classList.remove('hidden');
