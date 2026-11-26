@@ -572,6 +572,28 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
   font-weight:800 !important;
 }
 </style>
+<style id="mm-routine-profile-style">
+.mm-profile-section {padding:14px;border-radius:20px;border:1px solid #334155;background:#14212c;display:grid;gap:12px;color:#f1f5f9}
+.mm-profile-section h3 {font-size:15px;font-weight:800;color:#6ee7b7}
+.mm-profile-hint {font-size:12px;line-height:1.5;color:#a8b9ca;margin-top:6px}
+html[data-theme="light"] .mm-profile-section {background:#f0f7f3;border-color:#cbded2;color:#17372a}
+html[data-theme="light"] .mm-profile-section h3 {color:#087f55}
+html[data-theme="light"] .mm-profile-hint {color:#415a4c}
+html[data-theme="light"] #onboarding-view input,html[data-theme="light"] #onboarding-view select {background:#fff!important;color:#17211d!important;border-color:#bdcfc3!important}
+html[data-theme="light"] #onboarding-view label {color:#415a4c!important}
+#generate-plan-btn:disabled {opacity:.55;cursor:not-allowed;transform:none!important}
+</style><style id="mm-meal-visuals">
+#app-shell .mm-meal-heading{display:grid;grid-template-columns:84px minmax(0,1fr);gap:12px;align-items:start}
+#app-shell .mm-meal-photo{width:84px;height:84px;display:grid;place-items:center;position:relative;overflow:hidden;border-radius:17px;background:#163d30;color:#a7f3d0;border:1px solid #10b98140}
+#app-shell .mm-meal-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+#app-shell .mm-meal-photo-credit{display:block;font-size:9px;line-height:1.3;margin-top:4px;overflow-wrap:anywhere;color:#a3b5c5;text-align:center}
+html[data-theme="light"] #app-shell .mm-meal-photo-credit{color:#52675a}
+#app-shell .mm-meal-time{display:inline-flex;align-items:center;gap:5px;border:1px solid #10b98155;background:#10b98119;color:#a7f3d0;border-radius:999px;padding:4px 9px;font-size:11px;font-weight:700;white-space:normal}
+html[data-theme="light"] #app-shell .mm-meal-time{color:#08633e;background:#e4f6ea;border-color:#a6d6b9}
+#app-shell .mm-meal-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+#app-shell .mm-meal-title{overflow-wrap:anywhere;margin:4px 0}
+@media(min-width:600px){#app-shell .mm-meal-heading{grid-template-columns:110px minmax(0,1fr);gap:16px}#app-shell .mm-meal-photo{width:110px;height:100px}}
+</style>
 </head>
 <body class="min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
 
@@ -750,9 +772,7 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
 
         <div>
           <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Pace & Approach</label>
-          <div class="px-3.5 py-2.5 rounded-xl bg-gray-950/70 border border-gray-800/80 text-xs text-emerald-300 font-medium">
-            Steady ~0.5–0.7 kg/wk fat loss & muscle retention
-          </div>
+          <select id="inp-pace" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-950 border border-gray-800 text-white text-sm focus:outline-none focus:border-emerald-500"><option value="gentle">Gentle — gradual (10% deficit)</option><option value="steady" selected>Steady — balanced (15% deficit)</option><option value="focused">Focused — up to 20% deficit</option></select><p class="mm-profile-hint">For fat-loss goals only; actual weight change varies.</p>
         </div>
       </div>
 
@@ -764,6 +784,10 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
             <option value="recomp">Fat Loss & Lean Muscle (V-Taper)</option>
             <option value="muscle">Lean Muscle Gain</option>
             <option value="maintain">Maintain & Stay Fit</option>
+            <option value="fatloss">Weight / Fat Loss</option>
+            <option value="strength">Strength & Performance</option>
+            <option value="endurance">Endurance & Athletic Performance</option>
+            <option value="wellness">General Health & Fitness</option>
           </select>
         </div>
         <div>
@@ -777,6 +801,8 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
         </div>
       </div>
 
+      <section class="mm-profile-section"><h3>Daily routine</h3><div class="grid grid-cols-2 gap-3"><div><label for="inp-wake" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Wake-up time (optional)</label><input id="inp-wake" type="time" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-950 border border-gray-800 text-white text-sm focus:outline-none focus:border-emerald-500" /></div><div><label for="inp-sleep" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Bedtime (optional)</label><input id="inp-sleep" type="time" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-950 border border-gray-800 text-white text-sm focus:outline-none focus:border-emerald-500" /></div><div><label for="inp-workout-time" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Workout time (optional)</label><input id="inp-workout-time" type="time" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-950 border border-gray-800 text-white text-sm focus:outline-none focus:border-emerald-500" /></div><div><label for="inp-workout-duration" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Typical workout duration</label><select id="inp-workout-duration" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-950 border border-gray-800 text-white text-sm focus:outline-none focus:border-emerald-500"><option value="" selected>Not specified</option><option value="0">No planned workouts</option><option value="30">Up to 30 min</option><option value="45">31–45 min</option><option value="60">46–60 min</option><option value="90">61–90 min</option><option value="120">Over 90 min</option></select></div></div><p class="mm-profile-hint">Workout duration helps contextualise activity. Choose an activity level reflecting total daily movement and exercise. Routine details may be sent to AI when generating meal suggestions.</p></section>
+      <section class="mm-profile-section"><h3>Health considerations</h3><div><label for="inp-medical" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Medical considerations (optional)</label><select id="inp-medical" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-950 border border-gray-800 text-white text-sm focus:outline-none focus:border-emerald-500"><option value="unspecified" selected>Prefer not to say / not specified</option><option value="none">None known</option><option value="diabetes">Diabetes / blood sugar condition</option><option value="kidney">Kidney condition</option><option value="heart">Heart condition / high blood pressure</option><option value="thyroid">Thyroid condition</option><option value="liver">Liver condition</option><option value="digestive">Digestive condition</option><option value="pregnancy">Pregnant / breastfeeding</option><option value="eating">Eating disorder / recovery</option><option value="other">Other / multiple conditions</option></select></div><p class="mm-profile-hint">Optional sensitive information: saved with your profile and included in any enabled cloud sync or backups. Not sent to Gemini by this feature. A reported condition pauses automatic diet planning; consult a qualified clinician for individual targets.</p></section>
       <!-- Weekly Diet Schedule -->
       <div class="pt-1">
         <div class="flex items-center justify-between mb-2">
@@ -826,6 +852,7 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
         </div>
       </div>
 
+      <p id="mm-target-warning" class="mm-profile-hint" role="status"></p>
       <div class="flex gap-2.5 pt-1">
         <button type="button" id="cancel-edit-btn" onclick="cancelProfileEdit()" class="hidden flex-1 py-3.5 rounded-2xl bg-gray-800 hover:bg-gray-700 text-gray-200 font-semibold text-sm transition">
           Cancel
@@ -1493,6 +1520,7 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
 <div class="mm-plan-info"><div class="mm-plan-info-icon"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v7a3 3 0 0 0 6 0V3M7 3v18M19 3c-4 3-4 8 0 10h2M21 3v18"/></svg></div><div><strong>Personalised for your goals</strong><p>Indian meals, dietary preferences, balanced macros and step-by-step recipes.</p></div></div>
 </section>
 
+      <p id="mm-plan-health-warning" class="mm-profile-hint" role="status"></p>
       <div id="plan-results-container" class="space-y-3"></div>
     </main>
 
@@ -2465,7 +2493,14 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
       }
     };
 
-    function calculateMetrics({ age, gender, height, weight, bodyFat, goal, activity }) {
+    function readRoutineProfile() {
+      const val = id => document.getElementById(id).value;
+      return { pace: val('inp-pace'), wakeTime: val('inp-wake'), sleepTime: val('inp-sleep'), workoutTime: val('inp-workout-time'), workoutDuration: val('inp-workout-duration'), medicalCondition: val('inp-medical') };
+    }
+    function needsNutritionReview(p) {
+      return Number(p.age) < 18 || Number(p.weight) / Math.pow(Number(p.height)/100,2) < 18.5 || !['none','unspecified',''].includes(p.medicalCondition || 'unspecified');
+    }
+    function calculateMetrics({ age, gender, height, weight, bodyFat, goal, activity, pace='steady', medicalCondition='unspecified' }) {
       const hMeters = height / 100;
       const bmi = +(weight / (hMeters * hMeters)).toFixed(1);
       const bf = bodyFat && !isNaN(bodyFat) ? +Number(bodyFat).toFixed(1) : null;
@@ -2481,26 +2516,26 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
 
       const tdee = Math.round(bmr * parseFloat(activity));
 
+      const reviewRequired = needsNutritionReview({age, height, weight, medicalCondition});
+      const deficit = ({gentle:0.10, steady:0.15, focused:0.20})[pace] ?? 0.15;
       let targetCalories = tdee;
-      let proteinPerKg = 1.75;
-
-      if (goal === 'recomp') {
-        const desiredDeficit = tdee - bmr >= 600 ? 600 : 500;
-        targetCalories = Math.max(1200, bmr, tdee - desiredDeficit);
-        proteinPerKg = 1.75;
-      } else if (goal === 'muscle') {
-        targetCalories = Math.max(1200, tdee + 250);
-        proteinPerKg = 1.8;
-      } else {
-        targetCalories = Math.max(1200, tdee);
-        proteinPerKg = 1.65;
-      }
-
+      let proteinPerKg = 1.4;
+      if (!reviewRequired) {
+        if (goal === 'recomp' || goal === 'fatloss') {
+          targetCalories = Math.max(bmr, gender === 'male' ? 1500 : 1200, tdee - Math.min(500,tdee * deficit));
+          targetCalories = Math.min(tdee,targetCalories);
+          proteinPerKg = 1.6;
+        } else if (goal === 'muscle') {
+          targetCalories = tdee + Math.min(250,tdee*0.10);
+          proteinPerKg = 1.6;
+        } else if (goal === 'strength' || goal === 'endurance') {
+          proteinPerKg = 1.6;
+        } else if (goal === 'wellness') { proteinPerKg = 1.2; }
+      } else { proteinPerKg = 0.8; }
       targetCalories = Math.round(targetCalories);
-      const proteinGrams = Math.round(weight * proteinPerKg);
-      const fatGrams = Math.round((targetCalories * 0.27) / 9);
-      const remainingCals = Math.max(200, targetCalories - (proteinGrams * 4) - (fatGrams * 9));
-      const carbGrams = Math.round(remainingCals / 4);
+      const proteinGrams = Math.round(Math.min(weight * proteinPerKg, targetCalories * 0.30 / 4));
+      const fatGrams = Math.round(targetCalories * 0.28 / 9);
+      const carbGrams = Math.max(0, Math.round((targetCalories - proteinGrams*4 - fatGrams*9)/4));
 
       return {
         bmi,
@@ -2508,6 +2543,7 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
         bodyFat: bf,
         bmr,
         tdee,
+        reviewRequired,
         targetCalories,
         proteinGrams,
         carbGrams,
@@ -2580,7 +2616,8 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
       const activity = document.getElementById('inp-activity').value;
 
       if (age && height && weight) {
-        const m = calculateMetrics({ age, gender, height, weight, bodyFat, goal, activity });
+        const m = calculateMetrics({ age, gender, height, weight, bodyFat, goal, activity, ...readRoutineProfile() });
+        document.getElementById('mm-target-warning').textContent = m.reviewRequired ? 'Automatic targets are paused. Numbers shown are generic tracking references, not a medical or personalised nutrition plan. Seek individual guidance before changing your diet.' : 'Estimated adult nutrition targets; actual needs and progress vary. Activity includes workouts, so workout calories are not added again here.';
         document.getElementById('prev-bmi').textContent = `${m.bmi}`;
         document.getElementById('prev-cal').textContent = `${m.targetCalories}`;
         document.getElementById('prev-pro').textContent = `${m.proteinGrams}g`;
@@ -2588,7 +2625,7 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
       }
     }
 
-    ['inp-age', 'inp-height', 'inp-weight', 'inp-gender', 'inp-goal', 'inp-activity'].forEach(id => {
+    ['inp-age', 'inp-height', 'inp-weight', 'inp-gender', 'inp-goal', 'inp-activity', 'inp-pace', 'inp-wake', 'inp-sleep', 'inp-workout-time', 'inp-workout-duration', 'inp-medical'].forEach(id => {
       document.getElementById(id).addEventListener('input', updateOnboardingLivePreview);
       document.getElementById(id).addEventListener('change', updateOnboardingLivePreview);
     });
@@ -2994,7 +3031,7 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
         return;
       }
 
-      const metrics = calculateMetrics({ age, gender, height, weight, bodyFat, goal, activity });
+      const metrics = calculateMetrics({ age, gender, height, weight, bodyFat, goal, activity, ...readRoutineProfile() });
       userProfile = {
         name,
         gender,
@@ -3004,6 +3041,7 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
         bodyFat: metrics.bodyFat,
         goal,
         activity,
+        ...readRoutineProfile(),
         schedule: { ...draftSchedule },
         metrics,
         customGeminiApiKey
@@ -3046,10 +3084,14 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
         document.getElementById('inp-weight').value = userProfile.weight || '';
         document.getElementById('inp-goal').value = userProfile.goal || 'recomp';
         document.getElementById('inp-activity').value = userProfile.activity || '1.55';
+        for (const [id,key,def] of [['inp-pace','pace','steady'],['inp-wake','wakeTime',''],['inp-sleep','sleepTime',''],['inp-workout-time','workoutTime',''],['inp-workout-duration','workoutDuration',''],['inp-medical','medicalCondition','unspecified']]) document.getElementById(id).value = userProfile[key] ?? def;
         draftSchedule = { ...(userProfile.schedule || draftSchedule) };
         updateOnboardingLivePreview();
       } else {
         cancelBtn.classList.add('hidden');
+        document.getElementById('profile-form').reset();
+        document.getElementById('mm-target-warning').textContent = '';
+        for (const id of ['prev-bmi','prev-cal','prev-pro','prev-cf']) document.getElementById(id).textContent = '--';
       }
       renderDayScheduleButtons();
 
@@ -3505,6 +3547,9 @@ html[data-theme] #onboarding-view button[data-diet-preset][aria-pressed="true"] 
       document.getElementById('prof-bmi-cat').textContent = m.bmiCategory;
       document.getElementById('prof-cal').textContent = m.targetCalories;
       document.getElementById('prof-pro').textContent = `${m.proteinGrams}g`;
+      let notice = document.getElementById('mm-profile-health-note');
+      if (!notice) { notice = document.createElement('p'); notice.id='mm-profile-health-note'; notice.className='mm-profile-hint'; document.getElementById('prof-sub').after(notice); }
+      notice.textContent = needsNutritionReview(userProfile) ? 'Tracking references only. Seek individual nutrition guidance; automatic meal plans paused.' : '';
 
       const weekGrid = document.getElementById('prof-week-badges');
       weekGrid.innerHTML = WEEK_ORDER.map(idx => {
@@ -5053,6 +5098,11 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
       if (dayPill) dayPill.textContent = `${dayName} • ${getDietLabel(dietCode)}`;
       if (dayPill) dayPill.dataset.diet = dietCode;
 
+      const warning = document.getElementById('mm-plan-health-warning');
+      const review = needsNutritionReview(userProfile);
+      document.getElementById('generate-plan-btn').disabled = review;
+      if (warning) warning.textContent = review ? 'Automatic meal planning is paused. Consult a qualified health professional for personalised nutrition targets. Existing plans are kept but hidden.' : '';
+      if (review) { document.getElementById('plan-results-container').innerHTML = ''; return; }
       const countSelect = document.getElementById('mm-meal-count');
       if (countSelect) countSelect.value = String(dailyPlansCache[selectedDateStr]?.meals?.length || preferredMealCount());
       if (dailyPlansCache[selectedDateStr]) {
@@ -5097,6 +5147,7 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
     };
 
     window.generateDailyPlan = async function() {
+      if (!userProfile || needsNutritionReview(userProfile)) { showToast('Individual nutrition guidance is needed before automatic planning.', 'info'); return; }
       const btn = document.getElementById('generate-plan-btn');
       btn.disabled = true;
       btn.innerHTML = `<span class="mm-plan-spinner" aria-hidden="true"></span><span>Building Today's Meal Plan...</span>`;
@@ -5117,6 +5168,7 @@ User goal: ${userProfile.goal}, daily protein target: ${userProfile.metrics.prot
       const prompt = `Create a practical, delicious 1-day Indian meal plan (exactly ${mealCount} meals: ${mealSlotsByCount[mealCount].join(', ')}) for ${userProfile.name} (${userProfile.age}yo ${userProfile.gender}, ${userProfile.height}cm, ${userProfile.weight}kg, BMI ${m.bmi}, Goal: ${userProfile.goal}).
 Today is ${dayName}. Dietary Rule for today: ${dietRule}
 Total daily macros across the ${mealCount} meals should closely match: ~${m.targetCalories} kcal, ~${m.proteinGrams}g protein, ~${m.carbGrams}g carbs and ~${m.fatGrams}g fat.
+Routine (if provided): wake ${userProfile.wakeTime || "unspecified"}, bedtime ${userProfile.sleepTime || "unspecified"}, workout ${userProfile.workoutTime || "unspecified"}, duration category ${userProfile.workoutDuration || "unspecified"} minutes. Arrange meals around this routine without changing the daily targets.
 For each meal, provide a realistic meal title, Indian ingredients/food description, and estimated calories, protein, carbs and fats. Use practical Indian household portions and distribute protein across the day. Do not include workout plans or workout splits.`;
 
       try {
@@ -5146,19 +5198,78 @@ For each meal, provide a realistic meal title, Indian ingredients/food descripti
       }
     };
 
+
+    // Suggested meal times are local estimates, not nutrition prescriptions.
+    function mmMealTimes(count, profile={}) {
+      const parse = x => typeof x==='string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(x) ? Number(x.slice(0,2))*60+Number(x.slice(3)) : null;
+      let wake=parse(profile.wakeTime), sleep=parse(profile.sleepTime);
+      let assumed=wake===null||sleep===null;
+      wake=wake??420; sleep=sleep??1380;
+      let span=(sleep-wake+1440)%1440;
+      if(span<360 || span>1320){wake=420;span=960;assumed=true;}
+      const start=wake+Math.min(60,span*.08), end=wake+span-Math.min(120,span*.14);
+      const fractions={3:[0,.49,1],4:[0,.43,.72,1],5:[0,.24,.49,.74,1],6:[0,.20,.42,.62,.84,1]}[count] || [0,.43,.72,1];
+      const workout=parse(profile.workoutTime), duration=Number(profile.workoutDuration)||0;
+      const w=workout===null?null:wake+(workout-wake+1440)%1440;
+      const active=w!==null && duration>0 && w<wake+span && w+duration<=wake+span;
+      const step=15, lo=Math.ceil(start/step)*step, hi=Math.floor(end/step)*step;
+      // Dynamic programming: preserve meal order and avoid planned exercise when possible.
+      const candidates=[]; for(let t=lo;t<=hi;t+=step)candidates.push(t);
+      const minGap=Math.min(90,Math.max(15,Math.floor((hi-lo)/Math.max(1,count-1)/step)*step));
+      let states=[{cost:0,times:[]}];
+      for(let i=0;i<count;i++){
+        const target=start+(end-start)*fractions[i];
+        states=candidates.map(t=>{
+          const previous=states.filter(a=>!a.times.length||t-a.times.at(-1)>=minGap).sort((a,b)=>a.cost-b.cost)[0];
+          if(!previous)return null;
+          const conflict=active&&t>=w-15&&t<w+duration+15;
+          return {cost:previous.cost+(t-target)**2+(conflict?1000000:0),times:[...previous.times,t]};
+        }).filter(Boolean);
+      }
+      const times=states.sort((a,b)=>a.cost-b.cost)[0]?.times || fractions.map(f=>Math.round((start+(end-start)*f)/15)*15);
+      const format=t=>{const m=((t%1440)+1440)%1440,h=Math.floor(m/60);return `${h%12||12}:${String(m%60).padStart(2,'0')} ${h<12?'AM':'PM'}${t>=1440?' (+1 day)':''}`;};
+      return {labels:times.map(format),assumed,active,conflict:active&&times.some(t=>t>=w-15&&t<w+duration+15)};
+    }
+    const mmMealPhotos = [
+      {match:/\b(chilla|cheela|moonglet)\b/i,file:'Moonglet chilla with curd and hot tea.jpg',author:'RekhaY07'},
+      {match:/\b(poha)\b/i,file:'Indian Breakfast Poha.jpg',author:'Rijushna Gogoi'},
+      {match:/\b(chicken)\b/i,file:'Chicken Curry Rice.jpg',author:'Nilanjan Sasmal'},
+      {match:/\b(sprout|sprouts)\b/i,file:'Sprout chaat.jpg',author:'Sraddhs'},
+      {match:/\b(curd|yogurt|yoghurt|dahi)\b.*\b(fruit|berries|banana)\b|\b(fruit|berries|banana)\b.*\b(curd|yogurt|yoghurt|dahi)\b/i,file:'Yogurt fruit bowl.jpg',author:'Jumbocombo0811'},
+      {match:/\b(fish|egg|eggs|omelette|mutton|prawn|meat)\b/i,file:null},
+      {match:/\b(thali|paneer|roti|dal|sabzi)\b/i,file:'Indian Thali 2024.jpg',author:'03Ani03'}
+    ];
+    function mmMealPhoto(meal){
+      const title=String(meal.title||'');
+      const text=title+' '+String(meal.indianItems||'');
+      const animal=/\b(chicken|fish|eggs?|omelette|mutton|prawns?|meat)\b/i;
+      let photo=mmMealPhotos.find(p=>p.match.test(title))||mmMealPhotos.find(p=>p.match.test(text));
+      if(photo?.file && animal.test(title) && !/\bchicken\b/i.test(title))photo=null;
+      const fallback='<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M2 3v6m2-6v6M2 7h2m16-4v18"/></svg>';
+      if(!photo?.file)return `<div><div class="mm-meal-photo">${fallback}</div><span class="mm-meal-photo-credit">Meal illustration</span></div>`;
+      const file=encodeURIComponent(photo.file.replace(/ /g,'_'));
+      const page='https://commons.wikimedia.org/wiki/File:'+file;
+      const url='https://commons.wikimedia.org/wiki/Special:FilePath/'+file+'?width=320';
+      return `<div><div class="mm-meal-photo">${fallback}<img loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${url}" alt="Reference photo of a similar dish" onerror="this.hidden=true;this.style.display='none';this.closest('.mm-meal-heading').querySelector('.mm-meal-photo-credit').textContent='Meal illustration';"></div><a class="mm-meal-photo-credit" href="${page}" target="_blank" rel="noopener noreferrer">Reference photo · ${escapeHtml(photo.author)} (CC BY-SA 4.0)</a></div>`;
+    }
+
     function renderGeneratedPlan(plan) {
       const container = document.getElementById('plan-results-container');
       if (!container) return;
       plan = normalizeDailyPlan(plan, userProfile?.metrics || {});
       dailyPlansCache[selectedDateStr] = plan;
+      const schedule = mmMealTimes(plan.meals.length, userProfile || {});
       const mealsHtml = plan.meals.map((meal, idx) => `
         <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400">${escapeHtml(meal.slot)}</span>
-            <span class="text-xs font-bold text-emerald-400">${safePlanNumber(meal.calories)} kcal • ${safePlanNumber(meal.protein)}g P</span>
+          <div class="mm-meal-heading">
+            ${mmMealPhoto(meal)}
+            <div>
+              <div class="mm-meal-meta"><span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400">${escapeHtml(meal.slot)}</span><span class="mm-meal-time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${escapeHtml(schedule.labels[idx]||'')}</span></div>
+              <h4 class="mm-meal-title text-sm font-bold text-white">${escapeHtml(meal.title)}</h4>
+              <div class="text-xs font-bold text-emerald-400">${safePlanNumber(meal.calories)} kcal • ${safePlanNumber(meal.protein)}g P</div>
+              <p class="text-xs text-gray-300 leading-relaxed mt-1">${escapeHtml(meal.indianItems)}</p>
+            </div>
           </div>
-          <h4 class="text-sm font-bold text-white">${escapeHtml(meal.title)}</h4>
-          <p class="text-xs text-gray-300 leading-relaxed">${escapeHtml(meal.indianItems)}</p>
           <div class="flex items-center justify-between pt-2 border-t border-gray-800/80">
             <span class="text-[11px] text-gray-400">${safePlanNumber(meal.carbs)}g Carbs • ${safePlanNumber(meal.fats)}g Fats</span>
             <div class="flex flex-wrap items-center gap-1.5">
@@ -5179,6 +5290,7 @@ For each meal, provide a realistic meal title, Indian ingredients/food descripti
         ` : ''}
         <div class="space-y-2.5">
           <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-400 px-1">Today's Indian Meals · ${plan.meals.length} meals</h3>
+          <p class="text-xs text-gray-400 px-1">Suggested times are flexible. ${schedule.assumed?'Missing or unusual routine: using default hours where needed. Set your wake and sleep times in Profile.':'Based on your saved wake-up and bedtime.'} ${schedule.active?(schedule.conflict?'Some meal times may overlap training; adjust as needed.':'Planned workout window considered.') : ''} Photos are examples, not exact portions. <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">Photo licence</a>.</p>
           ${mealsHtml}
         </div>
       `;
